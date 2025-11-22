@@ -255,9 +255,27 @@ const Card = sequelize.define('Card', {
 
   // Tags and Organization
   tags: {
-    type: DataTypes.ARRAY(DataTypes.STRING),
+    type: DataTypes.JSON,
     defaultValue: [],
-    comment: 'Tags for organization'
+    comment: 'Tags for organization (stored as JSON array for cross-database compatibility)',
+    get() {
+      const value = this.getDataValue('tags');
+      // Ensure we always return an array, even if stored as string
+      if (Array.isArray(value)) return value;
+      if (typeof value === 'string') {
+        try {
+          const parsed = JSON.parse(value);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          return [];
+        }
+      }
+      return value || [];
+    },
+    set(value) {
+      // Ensure we always store an array
+      this.setDataValue('tags', Array.isArray(value) ? value : []);
+    }
   },
 
   // Timestamps (createdAt and updatedAt are added automatically)
