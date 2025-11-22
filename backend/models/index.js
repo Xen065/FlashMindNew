@@ -25,6 +25,7 @@ const MathTrickProgress = require('./MathTrickProgress');
 const MathTrickScore = require('./MathTrickScore');
 const MathTrickAchievement = require('./MathTrickAchievement');
 const PasswordReset = require('./PasswordReset');
+const RefreshToken = require('./RefreshToken');
 
 // ============================================
 // Define Model Associations (Relationships)
@@ -385,6 +386,17 @@ PasswordReset.belongsTo(User, {
   as: 'user'
 });
 
+// User -> RefreshToken (One-to-Many)
+User.hasMany(RefreshToken, {
+  foreignKey: 'userId',
+  as: 'refreshTokens'
+});
+
+RefreshToken.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user'
+});
+
 // ============================================
 // Export all models
 // ============================================
@@ -409,5 +421,6 @@ module.exports = {
   MathTrickProgress,
   MathTrickScore,
   MathTrickAchievement,
-  PasswordReset
+  PasswordReset,
+  RefreshToken
 };

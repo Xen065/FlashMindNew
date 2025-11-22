@@ -9,8 +9,8 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { User, PasswordReset } = require('../models');
-const { generateToken } = require('../utils/jwt');
+const { User, PasswordReset, RefreshToken } = require('../models');
+const { generateToken, generateTokenPair, verifyToken } = require('../utils/jwt');
 const { loginLimiter, registerLimiter } = require('../middleware/rateLimiter');
 const { sendPasswordResetEmail, sendEmailVerification } = require('../utils/email');
 
@@ -467,6 +467,164 @@ router.post('/resend-verification', require('../middleware/auth').protect, async
     res.status(500).json({
       success: false,
       message: 'Error sending verification email',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+/**
+ * @route   POST /api/auth/refresh
+ * @desc    Refresh access token using refresh token
+ * @access  Public
+ */
+router.post('/refresh', [
+  body('refreshToken')
+    .notEmpty()
+    .withMessage('Refresh token is required')
+], async (req, res) => {
+  try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: errors.array()
+      });
+    }
+
+    const { refreshToken } = req.body;
+
+    // Verify refresh token signature
+    let decoded;
+    try {
+      decoded = verifyToken(refreshToken);
+    } catch (error) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid refresh token'
+      });
+    }
+
+    // Check token type
+    if (decoded.type !== 'refresh') {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid token type'
+      });
+    }
+
+    // Check if token exists in database and is not revoked
+    const storedToken = await RefreshToken.findOne({
+      where: { token: refreshToken }
+    });
+
+    if (!storedToken) {
+      return res.status(401).json({
+        success: false,
+        message: 'Refresh token not found'
+      });
+    }
+
+    // Check if token is active (not revoked and not expired)
+    if (!storedToken.isActive()) {
+      return res.status(401).json({
+        success: false,
+        message: storedToken.revoked
+          ? 'Refresh token has been revoked'
+          : 'Refresh token has expired'
+      });
+    }
+
+    // Verify user still exists
+    const user = await User.findByPk(decoded.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Verify user is still active
+    if (!user.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: 'User account is deactivated'
+      });
+    }
+
+    // Generate new token pair
+    const newTokens = generateTokenPair(decoded.id);
+
+    // Revoke old refresh token (token rotation)
+    await storedToken.revoke(newTokens.refreshToken);
+
+    // Store new refresh token
+    await RefreshToken.create({
+      userId: decoded.id,
+      token: newTokens.refreshToken,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.get('user-agent')
+    });
+
+    res.json({
+      success: true,
+      message: 'Tokens refreshed successfully',
+      data: {
+        accessToken: newTokens.accessToken,
+        refreshToken: newTokens.refreshToken
+      }
+    });
+  } catch (error) {
+    console.error('Refresh token error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error refreshing token',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+/**
+ * @route   POST /api/auth/logout
+ * @desc    Revoke refresh token (logout)
+ * @access  Private
+ */
+router.post('/logout', require('../middleware/auth').protect, [
+  body('refreshToken')
+    .optional()
+    .notEmpty()
+    .withMessage('Refresh token must not be empty if provided')
+], async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (refreshToken) {
+      // Revoke specific refresh token
+      const token = await RefreshToken.findOne({
+        where: { token: refreshToken, userId: req.user.id }
+      });
+
+      if (token) {
+        await token.revoke();
+      }
+    } else {
+      // Revoke all refresh tokens for this user (logout from all devices)
+      await RefreshToken.revokeAllUserTokens(req.user.id);
+    }
+
+    res.json({
+      success: true,
+      message: refreshToken
+        ? 'Logged out successfully'
+        : 'Logged out from all devices successfully'
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error logging out',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
