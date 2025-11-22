@@ -25,6 +25,8 @@ const loginLimiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in RateLimit-* headers
   legacyHeaders: false, // Disable X-RateLimit-* headers
+  // Skip rate limiting in test environment
+  skip: (req) => process.env.NODE_ENV === 'test'
   // Skip rate limiting for successful logins (optional - uncomment if desired)
   // skipSuccessfulRequests: true
 });
@@ -43,6 +45,8 @@ const registerLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Skip rate limiting in test environment
+  skip: (req) => process.env.NODE_ENV === 'test'
 });
 
 /**

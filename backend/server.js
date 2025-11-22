@@ -244,34 +244,37 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to database and start server
-db.authenticate()
-  .then(() => {
-    console.log('✅ Database connected successfully');
+// Only start server if this file is run directly (not imported for tests)
+if (require.main === module) {
+  // Connect to database and start server
+  db.authenticate()
+    .then(() => {
+      console.log('✅ Database connected successfully');
 
-    // Sync database models (create tables if they don't exist)
-    return db.sync({ alter: process.env.NODE_ENV === 'development' });
-  })
-  .then(() => {
-    console.log('✅ Database synchronized');
+      // Sync database models (create tables if they don't exist)
+      return db.sync({ alter: process.env.NODE_ENV === 'development' });
+    })
+    .then(() => {
+      console.log('✅ Database synchronized');
 
-    // Start listening for requests
-    app.listen(PORT, () => {
-      console.log('');
-      console.log('🚀 ============================================');
-      console.log(`🚀 FlashMind API Server is running!`);
-      console.log(`🚀 Environment: ${process.env.NODE_ENV}`);
-      console.log(`🚀 Port: ${PORT}`);
-      console.log(`🚀 URL: http://localhost:${PORT}`);
-      console.log(`🚀 Health Check: http://localhost:${PORT}/api/health`);
-      console.log('🚀 ============================================');
-      console.log('');
+      // Start listening for requests
+      app.listen(PORT, () => {
+        console.log('');
+        console.log('🚀 ============================================');
+        console.log(`🚀 FlashMind API Server is running!`);
+        console.log(`🚀 Environment: ${process.env.NODE_ENV}`);
+        console.log(`🚀 Port: ${PORT}`);
+        console.log(`🚀 URL: http://localhost:${PORT}`);
+        console.log(`🚀 Health Check: http://localhost:${PORT}/api/health`);
+        console.log('🚀 ============================================');
+        console.log('');
+      });
+    })
+    .catch(err => {
+      console.error('❌ Unable to start server:', err);
+      process.exit(1);
     });
-  })
-  .catch(err => {
-    console.error('❌ Unable to start server:', err);
-    process.exit(1);
-  });
+}
 
 // Handle graceful shutdown
 process.on('SIGTERM', () => {
@@ -279,3 +282,6 @@ process.on('SIGTERM', () => {
   db.close();
   process.exit(0);
 });
+
+// Export app for testing
+module.exports = app;

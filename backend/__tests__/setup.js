@@ -5,12 +5,14 @@
  * Initializes test database and global test configuration
  */
 
-const sequelize = require('../config/database');
-
-// Set test environment
+// IMPORTANT: Set test environment BEFORE requiring any modules
 process.env.NODE_ENV = 'test';
 process.env.DB_DIALECT = 'sqlite';
 process.env.DB_STORAGE = ':memory:'; // Use in-memory SQLite for tests
+process.env.JWT_SECRET = 'test-jwt-secret-key-for-testing-only-min-32-chars-long';
+
+// Now require database after environment is set
+const sequelize = require('../config/database');
 
 // Initialize database before all tests
 beforeAll(async () => {
@@ -30,12 +32,11 @@ beforeAll(async () => {
 
 // Clean up after each test
 afterEach(async () => {
-  // Optional: Clear all tables after each test
-  // Uncomment if needed for test isolation
-  // const models = Object.keys(sequelize.models);
-  // for (const modelName of models) {
-  //   await sequelize.models[modelName].destroy({ where: {}, force: true });
-  // }
+  // Clear all tables after each test for test isolation
+  const models = Object.keys(sequelize.models);
+  for (const modelName of models) {
+    await sequelize.models[modelName].destroy({ where: {}, force: true, truncate: true });
+  }
 });
 
 // Close database connection after all tests
