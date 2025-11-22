@@ -32,7 +32,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/__tests__/setup.js'],
 
   // Coverage thresholds
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       branches: 50,
       functions: 50,
