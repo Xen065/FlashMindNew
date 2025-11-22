@@ -115,6 +115,9 @@ const morgan = require('morgan');
 // Import database connection
 const db = require('./config/database');
 
+// Import error handling utilities
+const { AppError, ERROR_CODES } = require('./utils/errorCodes');
+
 // Import routes
 const publicRoutes = require('./routes/public');
 const authRoutes = require('./routes/auth');
@@ -230,11 +233,122 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(err.status || 500).json({
+  // Log error details server-side
+  const errorLog = {
+    timestamp: new Date().toISOString(),
+    method: req.method,
+    url: req.url,
+    userId: req.user?.id,
+    ip: req.ip || req.connection?.remoteAddress,
+    userAgent: req.get('user-agent')
+  };
+
+  // Handle AppError instances
+  if (err instanceof AppError) {
+    errorLog.code = err.code;
+    errorLog.message = err.message;
+    errorLog.statusCode = err.statusCode;
+
+    if (err.originalError) {
+      errorLog.originalError = err.originalError.message;
+      errorLog.stack = err.originalError.stack;
+    }
+
+    console.error('Application Error:', errorLog);
+
+    // Send structured error response
+    return res.status(err.statusCode).json({
+      success: false,
+      error: err.toJSON(),
+      ...(process.env.NODE_ENV === 'development' && {
+        stack: err.stack,
+        originalError: err.originalError?.message
+      })
+    });
+  }
+
+  // Handle validation errors from express-validator
+  if (err.name === 'ValidationError' || (err.errors && Array.isArray(err.errors))) {
+    errorLog.type = 'ValidationError';
+    errorLog.errors = err.errors;
+    console.error('Validation Error:', errorLog);
+
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'VAL_001',
+        message: 'Validation failed',
+        details: err.errors
+      }
+    });
+  }
+
+  // Handle Sequelize errors
+  if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
+    errorLog.type = err.name;
+    errorLog.errors = err.errors?.map(e => e.message);
+    console.error('Database Error:', errorLog);
+
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'DB_003',
+        message: 'Database constraint violation',
+        ...(process.env.NODE_ENV === 'development' && {
+          details: err.errors?.map(e => e.message)
+        })
+      }
+    });
+  }
+
+  // Handle JWT errors
+  if (err.name === 'JsonWebTokenError') {
+    errorLog.type = 'JsonWebTokenError';
+    console.error('JWT Error:', errorLog);
+
+    return res.status(401).json({
+      success: false,
+      error: {
+        code: 'AUTH_005',
+        message: 'Invalid authentication token'
+      }
+    });
+  }
+
+  if (err.name === 'TokenExpiredError') {
+    errorLog.type = 'TokenExpiredError';
+    console.error('JWT Expired:', errorLog);
+
+    return res.status(401).json({
+      success: false,
+      error: {
+        code: 'AUTH_004',
+        message: 'Your session has expired. Please log in again.'
+      }
+    });
+  }
+
+  // Handle unknown errors
+  errorLog.type = 'UnknownError';
+  errorLog.name = err.name;
+  errorLog.message = err.message;
+  errorLog.stack = err.stack;
+  console.error('Unknown Error:', errorLog);
+
+  // Don't leak error details in production
+  const statusCode = err.status || err.statusCode || 500;
+  res.status(statusCode).json({
     success: false,
-    message: err.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    error: {
+      code: 'SYS_001',
+      message: process.env.NODE_ENV === 'production'
+        ? 'An unexpected error occurred. Please try again.'
+        : err.message || 'Internal server error'
+    },
+    ...(process.env.NODE_ENV === 'development' && {
+      stack: err.stack,
+      name: err.name
+    })
   });
 });
 
