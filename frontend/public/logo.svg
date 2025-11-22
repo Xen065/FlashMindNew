@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <!-- Main gradient for the brain -->
+    <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Lightning gradient -->
+    <linearGradient id="lightningGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FCD34D;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FBBF24;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Glow effect for brain -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Lightning glow -->
+    <filter id="lightningGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Brain outline (stylized, geometric) -->
+  <g filter="url(#glow)">
+    <!-- Left hemisphere -->
+    <path d="M 100 30
+             C 70 30, 50 50, 45 70
+             C 42 80, 43 90, 45 100
+             C 47 110, 50 120, 55 130
+             C 60 140, 68 150, 78 157
+             C 85 162, 92 165, 100 165
+             L 100 30 Z"
+          fill="url(#brainGradient)"
+          stroke="url(#brainGradient)"
+          stroke-width="2"
+          opacity="0.9"/>
+
+    <!-- Right hemisphere -->
+    <path d="M 100 30
+             C 130 30, 150 50, 155 70
+             C 158 80, 157 90, 155 100
+             C 153 110, 150 120, 145 130
+             C 140 140, 132 150, 122 157
+             C 115 162, 108 165, 100 165
+             L 100 30 Z"
+          fill="url(#brainGradient)"
+          stroke="url(#brainGradient)"
+          stroke-width="2"
+          opacity="0.9"/>
+
+    <!-- Brain detail folds - Left side -->
+    <path d="M 60 55 Q 65 60, 68 65"
+          stroke="rgba(255, 255, 255, 0.4)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"/>
+    <path d="M 55 70 Q 60 75, 65 80"
+          stroke="rgba(255, 255, 255, 0.4)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"/>
+    <path d="M 52 90 Q 58 95, 63 100"
+          stroke="rgba(255, 255, 255, 0.4)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"/>
+    <path d="M 58 110 Q 65 115, 72 120"
+          stroke="rgba(255, 255, 255, 0.4)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"/>
+    <path d="M 68 135 Q 75 140, 82 145"
+          stroke="rgba(255, 255, 255, 0.4)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"/>
+
+    <!-- Brain detail folds - Right side -->
+    <path d="M 140 55 Q 135 60, 132 65"
+          stroke="rgba(255, 255, 255, 0.4)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"/>
+    <path d="M 145 70 Q 140 75, 135 80"
+          stroke="rgba(255, 255, 255, 0.4)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"/>
+    <path d="M 148 90 Q 142 95, 137 100"
+          stroke="rgba(255, 255, 255, 0.4)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"/>
+    <path d="M 142 110 Q 135 115, 128 120"
+          stroke="rgba(255, 255, 255, 0.4)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"/>
+    <path d="M 132 135 Q 125 140, 118 145"
+          stroke="rgba(255, 255, 255, 0.4)"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"/>
+
+    <!-- Central brain fold -->
+    <path d="M 100 40 Q 95 50, 96 60 Q 97 70, 100 80"
+          stroke="rgba(255, 255, 255, 0.3)"
+          stroke-width="2"
+          stroke-linecap="round"
+          fill="none"/>
+  </g>
+
+  <!-- Lightning bolt cutting through (dynamic and bold) -->
+  <g filter="url(#lightningGlow)">
+    <path d="M 115 25
+             L 90 85
+             L 110 85
+             L 95 140
+             L 130 70
+             L 108 70
+             L 125 25
+             Z"
+          fill="url(#lightningGradient)"
+          stroke="#FCD34D"
+          stroke-width="2"
+          stroke-linejoin="miter"/>
+
+    <!-- Inner highlight on lightning -->
+    <path d="M 118 30
+             L 95 80
+             L 107 80
+             L 100 120"
+          stroke="rgba(255, 255, 255, 0.6)"
+          stroke-width="2"
+          stroke-linecap="round"
+          fill="none"/>
+  </g>
+
+  <!-- Energy sparks around lightning -->
+  <circle cx="115" cy="28" r="3" fill="#FCD34D" opacity="0.8"/>
+  <circle cx="125" cy="32" r="2" fill="#FBBF24" opacity="0.7"/>
+  <circle cx="108" cy="35" r="2.5" fill="#FCD34D" opacity="0.6"/>
+  <circle cx="95" cy="138" r="3" fill="#F59E0B" opacity="0.8"/>
+  <circle cx="88" cy="132" r="2" fill="#FBBF24" opacity="0.7"/>
+  <circle cx="102" cy="142" r="2.5" fill="#FCD34D" opacity="0.6"/>
+</svg>
