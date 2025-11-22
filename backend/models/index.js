@@ -24,6 +24,7 @@ const StudyNote = require('./StudyNote');
 const MathTrickProgress = require('./MathTrickProgress');
 const MathTrickScore = require('./MathTrickScore');
 const MathTrickAchievement = require('./MathTrickAchievement');
+const PasswordReset = require('./PasswordReset');
 
 // ============================================
 // Define Model Associations (Relationships)
@@ -373,6 +374,17 @@ MathTrickAchievement.belongsTo(User, {
   as: 'student'
 });
 
+// User -> PasswordReset (One-to-Many)
+User.hasMany(PasswordReset, {
+  foreignKey: 'userId',
+  as: 'passwordResets'
+});
+
+PasswordReset.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user'
+});
+
 // ============================================
 // Export all models
 // ============================================
@@ -396,5 +408,6 @@ module.exports = {
   StudyNote,
   MathTrickProgress,
   MathTrickScore,
-  MathTrickAchievement
+  MathTrickAchievement,
+  PasswordReset
 };
