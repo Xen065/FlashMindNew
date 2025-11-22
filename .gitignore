@@ -104,6 +104,9 @@ backend/*.db
 backend/*.sqlite
 backend/*.sqlite3
 
+# Testing
+backend/coverage/
+
 # Uploads
 backend/uploads/
 backend/temp/
