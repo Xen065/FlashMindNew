@@ -10,6 +10,7 @@ const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const { User } = require('../models');
 const { generateToken } = require('../utils/jwt');
+const { loginLimiter, registerLimiter } = require('../middleware/rateLimiter');
 
 /**
  * @route   POST /api/auth/register
@@ -18,6 +19,7 @@ const { generateToken } = require('../utils/jwt');
  */
 router.post(
   '/register',
+  registerLimiter, // Rate limiting: 10 registrations per hour per IP
   [
     body('username')
       .trim()
@@ -107,6 +109,7 @@ router.post(
  */
 router.post(
   '/login',
+  loginLimiter, // Rate limiting: 5 login attempts per 15 minutes per IP
   [
     body('email')
       .trim()
