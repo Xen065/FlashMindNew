@@ -12,7 +12,7 @@ const crypto = require('crypto');
 const { User, PasswordReset } = require('../models');
 const { generateToken } = require('../utils/jwt');
 const { loginLimiter, registerLimiter } = require('../middleware/rateLimiter');
-const { sendPasswordResetEmail } = require('../utils/email');
+const { sendPasswordResetEmail, sendEmailVerification } = require('../utils/email');
 
 /**
  * @route   POST /api/auth/register
@@ -73,13 +73,23 @@ router.post(
         });
       }
 
+      // Generate email verification token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
       // Create new user (password will be hashed automatically by model hook)
       const user = await User.create({
         username,
         email,
         password,
-        fullName: fullName || username
+        fullName: fullName || username,
+        emailVerificationToken: verificationToken,
+        emailVerificationExpires: verificationExpires
       });
+
+      // Send verification email (don't await - fire and forget)
+      sendEmailVerification(email, verificationToken, user.fullName || username)
+        .catch(err => console.error('Failed to send verification email:', err));
 
       // Generate JWT token
       const token = generateToken(user.id);
@@ -87,7 +97,7 @@ router.post(
       // Return user data (without password)
       res.status(201).json({
         success: true,
-        message: 'User registered successfully',
+        message: 'User registered successfully. Please check your email to verify your account.',
         data: {
           user: user.getPublicProfile(),
           token
@@ -358,5 +368,108 @@ router.post(
     }
   }
 );
+
+/**
+ * @route   GET /api/auth/verify-email/:token
+ * @desc    Verify user email address
+ * @access  Public
+ */
+router.get('/verify-email/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    // Find user with matching token that hasn't expired
+    const user = await User.findOne({
+      where: {
+        emailVerificationToken: token,
+        emailVerificationExpires: {
+          [require('sequelize').Op.gt]: new Date()
+        }
+      }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification token'
+      });
+    }
+
+    // Check if already verified
+    if (user.isEmailVerified) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is already verified'
+      });
+    }
+
+    // Mark email as verified and clear verification token
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Email verified successfully! You can now access all features.'
+    });
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error verifying email',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+/**
+ * @route   POST /api/auth/resend-verification
+ * @desc    Resend email verification link
+ * @access  Private (requires authentication)
+ */
+router.post('/resend-verification', require('../middleware/auth').protect, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Check if already verified
+    if (user.isEmailVerified) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is already verified'
+      });
+    }
+
+    // Generate new verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    user.emailVerificationToken = verificationToken;
+    user.emailVerificationExpires = verificationExpires;
+    await user.save();
+
+    // Send verification email
+    await sendEmailVerification(user.email, verificationToken, user.fullName || user.username);
+
+    res.json({
+      success: true,
+      message: 'Verification email sent. Please check your inbox.'
+    });
+  } catch (error) {
+    console.error('Resend verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending verification email',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
 
 module.exports = router;
