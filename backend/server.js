@@ -9,6 +9,103 @@
 // Load environment variables from .env file
 require('dotenv').config();
 
+// ============================================
+// Environment Variable Validation
+// ============================================
+// Validate critical environment variables before starting server
+const validateEnvVariables = () => {
+  const requiredEnvVars = {
+    // Critical security variables
+    JWT_SECRET: {
+      description: 'JWT secret for token signing',
+      critical: true,
+      validation: (val) => val && val.length >= 32,
+      errorMessage: 'JWT_SECRET must be at least 32 characters long'
+    },
+    // Database configuration
+    DB_DIALECT: {
+      description: 'Database dialect (postgres, sqlite, etc.)',
+      critical: false,
+      default: 'postgres'
+    },
+    // Application URLs
+    FRONTEND_URL: {
+      description: 'Frontend application URL',
+      critical: false,
+      default: 'http://localhost:3000'
+    }
+  };
+
+  const errors = [];
+  const warnings = [];
+
+  // Validate each required variable
+  for (const [key, config] of Object.entries(requiredEnvVars)) {
+    const value = process.env[key];
+
+    if (!value) {
+      if (config.critical) {
+        errors.push(`❌ MISSING CRITICAL: ${key} - ${config.description}`);
+      } else if (config.default) {
+        warnings.push(`⚠️  USING DEFAULT: ${key}=${config.default} (${config.description})`);
+        process.env[key] = config.default;
+      } else {
+        warnings.push(`⚠️  MISSING: ${key} - ${config.description}`);
+      }
+    } else if (config.validation && !config.validation(value)) {
+      errors.push(`❌ INVALID: ${key} - ${config.errorMessage || 'Invalid value'}`);
+    }
+  }
+
+  // Additional production-specific validations
+  if (process.env.NODE_ENV === 'production') {
+    // Check JWT secret is not a weak default
+    const weakSecrets = ['secret', 'your_jwt_secret', 'change_this', 'test', '123456'];
+    if (process.env.JWT_SECRET && weakSecrets.some(weak =>
+      process.env.JWT_SECRET.toLowerCase().includes(weak))) {
+      errors.push('❌ SECURITY: JWT_SECRET appears to be a weak/default value in production!');
+    }
+
+    // Ensure database is not SQLite in production
+    if (process.env.DB_DIALECT === 'sqlite') {
+      warnings.push('⚠️  WARNING: Using SQLite in production is not recommended. Use PostgreSQL instead.');
+    }
+
+    // Check if SMTP is configured for production
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER) {
+      warnings.push('⚠️  WARNING: SMTP not configured. Password reset emails will not work!');
+    }
+
+    // Check if HTTPS is being used (via FRONTEND_URL)
+    if (process.env.FRONTEND_URL && !process.env.FRONTEND_URL.startsWith('https://')) {
+      warnings.push('⚠️  WARNING: FRONTEND_URL should use HTTPS in production');
+    }
+  }
+
+  // Print warnings
+  if (warnings.length > 0) {
+    console.log('\n⚠️  Environment Warnings:');
+    warnings.forEach(warning => console.log(`   ${warning}`));
+    console.log('');
+  }
+
+  // Print errors and exit if any critical issues
+  if (errors.length > 0) {
+    console.error('\n❌ Environment Variable Errors:');
+    errors.forEach(error => console.error(`   ${error}`));
+    console.error('\n💡 Solution:');
+    console.error('   1. Copy backend/.env.example to backend/.env');
+    console.error('   2. Update .env with your actual values');
+    console.error('   3. Generate a secure JWT_SECRET:');
+    console.error('      node -e "console.log(require(\'crypto\').randomBytes(64).toString(\'hex\'))"');
+    console.error('\n📖 See DEPLOYMENT_GUIDE.md for detailed setup instructions\n');
+    process.exit(1);
+  }
+};
+
+// Run validation before starting server
+validateEnvVariables();
+
 // Import required packages
 const express = require('express');
 const cors = require('cors');
