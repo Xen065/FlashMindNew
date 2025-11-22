@@ -501,7 +501,7 @@ describe('Cards API', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
-      expect(res.body.message).toContain('required');
+      expect(res.body.message).toContain('Validation error');
     });
 
     test('should reject card without answer', async () => {
@@ -515,7 +515,7 @@ describe('Cards API', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
-      expect(res.body.message).toContain('required');
+      expect(res.body.message).toContain('Validation error');
     });
 
     test('should reject card without courseId', async () => {
@@ -529,7 +529,7 @@ describe('Cards API', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
-      expect(res.body.message).toContain('required');
+      expect(res.body.message).toContain('Validation error');
     });
 
     test('should reject card creation without authentication', async () => {

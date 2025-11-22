@@ -7,6 +7,7 @@
 
 const express = require('express');
 const router = express.Router();
+const { body, validationResult } = require('express-validator');
 const { protect } = require('../middleware/auth');
 const { Card, Course } = require('../models');
 const { Op } = require('sequelize');
@@ -111,16 +112,59 @@ router.get('/due', protect, async (req, res) => {
  * @desc    Create a new card
  * @access  Private
  */
-router.post('/', protect, async (req, res) => {
+router.post('/', protect, [
+  body('question')
+    .trim()
+    .notEmpty()
+    .withMessage('Question is required')
+    .isLength({ max: 5000 })
+    .withMessage('Question must not exceed 5000 characters')
+    .escape(),
+  body('answer')
+    .trim()
+    .notEmpty()
+    .withMessage('Answer is required')
+    .isLength({ max: 5000 })
+    .withMessage('Answer must not exceed 5000 characters')
+    .escape(),
+  body('hint')
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage('Hint must not exceed 1000 characters')
+    .escape(),
+  body('courseId')
+    .notEmpty()
+    .withMessage('Course ID is required')
+    .isInt({ min: 1 })
+    .withMessage('Course ID must be a valid positive integer'),
+  body('cardType')
+    .optional()
+    .isIn(['basic', 'multiple_choice', 'true_false', 'fill_blank'])
+    .withMessage('Card type must be one of: basic, multiple_choice, true_false, fill_blank'),
+  body('options')
+    .optional()
+    .isArray()
+    .withMessage('Options must be an array')
+    .custom((value) => {
+      if (value && value.length > 10) {
+        throw new Error('Options array must not exceed 10 items');
+      }
+      return true;
+    })
+], async (req, res) => {
   try {
-    const { question, answer, hint, courseId, cardType, options } = req.body;
-
-    if (!question || !answer || !courseId) {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Question, answer, and courseId are required'
+        message: 'Validation error',
+        errors: errors.array()
       });
     }
+
+    const { question, answer, hint, courseId, cardType, options } = req.body;
 
     const card = await Card.create({
       question,
@@ -153,8 +197,47 @@ router.post('/', protect, async (req, res) => {
  * @desc    Update a card
  * @access  Private
  */
-router.put('/:id', protect, async (req, res) => {
+router.put('/:id', protect, [
+  body('question')
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 5000 })
+    .withMessage('Question must be between 1 and 5000 characters')
+    .escape(),
+  body('answer')
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 5000 })
+    .withMessage('Answer must be between 1 and 5000 characters')
+    .escape(),
+  body('hint')
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage('Hint must not exceed 1000 characters')
+    .escape(),
+  body('options')
+    .optional()
+    .isArray()
+    .withMessage('Options must be an array')
+    .custom((value) => {
+      if (value && value.length > 10) {
+        throw new Error('Options array must not exceed 10 items');
+      }
+      return true;
+    })
+], async (req, res) => {
   try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: errors.array()
+      });
+    }
+
     const card = await Card.findOne({
       where: {
         id: req.params.id,
