@@ -43,6 +43,13 @@ const config = {
     registration: process.env.REACT_APP_ENABLE_REGISTRATION !== 'false',
     socialLogin: process.env.REACT_APP_ENABLE_SOCIAL_LOGIN === 'true',
     darkMode: process.env.REACT_APP_ENABLE_DARK_MODE !== 'false',
+
+    // Study features - can be toggled individually
+    pomodoroTimer: process.env.REACT_APP_ENABLE_POMODORO !== 'false',
+    todoList: process.env.REACT_APP_ENABLE_TODO_LIST !== 'false',
+    studyNotes: process.env.REACT_APP_ENABLE_STUDY_NOTES !== 'false',
+    studyCalendar: process.env.REACT_APP_ENABLE_STUDY_CALENDAR !== 'false',
+    mathTrick: process.env.REACT_APP_ENABLE_MATH_TRICK !== 'false',
   },
 
   // App Settings
