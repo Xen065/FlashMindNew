@@ -1,0 +1,49 @@
+/* Theme Toggle Component Styles */
+/* Note: Base .theme-toggle styles are defined in index.css */
+
+.theme-toggle {
+  /* Ensure smooth transitions for theme icon */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.theme-toggle .theme-icon {
+  display: inline-block;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+/* Rotation animation on theme change */
+.theme-toggle:hover .theme-icon {
+  transform: rotate(180deg);
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile positioning */
+@media (max-width: 768px) {
+  .theme-toggle {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 52px;
+    height: 52px;
+  }
+
+  .theme-toggle .theme-icon {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-toggle {
+    bottom: 1rem;
+    right: 1rem;
+    width: 48px;
+    height: 48px;
+  }
+
+  .theme-toggle .theme-icon {
+    font-size: 1.3rem;
+  }
+}
