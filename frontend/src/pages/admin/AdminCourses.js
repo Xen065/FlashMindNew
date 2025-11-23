@@ -14,7 +14,7 @@ const AdminCourses = () => {
   const fetchCourses = async () => {
     try {
       const response = await axios.get(`${config.apiUrl}/api/admin/courses`);
-      setCourses(response.data.courses || []);
+      setCourses(response.data.data?.courses || []);
     } catch (error) {
       console.error('Error fetching courses:', error);
     } finally {
