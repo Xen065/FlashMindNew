@@ -1,3 +1,14 @@
+# ============================================
+# Root level (accidentally created files)
+# ============================================
+/node_modules/
+/package.json
+/package-lock.json
+
+# ============================================
+# Android/Mobile specific
+# ============================================
+
 # Built application files
 *.apk
 *.ap_
