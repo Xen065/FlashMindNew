@@ -9,19 +9,19 @@ const CourseDetail = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const response = await axios.get(`${config.apiUrl}/api/courses/${id}`);
+        setCourse(response.data.course);
+      } catch (error) {
+        console.error('Error fetching course:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchCourse();
   }, [id]);
-
-  const fetchCourse = async () => {
-    try {
-      const response = await axios.get(`${config.apiUrl}/api/courses/${id}`);
-      setCourse(response.data.course);
-    } catch (error) {
-      console.error('Error fetching course:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) return <div>Loading...</div>;
   if (!course) return <div>Course not found</div>;
