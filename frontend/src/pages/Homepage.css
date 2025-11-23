@@ -1,25 +1,454 @@
-/* Homepage styles */
+/* ====================================
+   Homepage Styles
+   Glassmorphism Design System
+   ==================================== */
+
 .homepage {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0;
 }
 
+/* Hero Section */
 .hero-section {
   text-align: center;
-  padding: 60px 20px;
+  padding: 5rem 2rem;
+  animation: fadeIn 0.8s ease;
 }
 
+.hero-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+  animation: fadeInUp 0.6s ease;
+}
+
+.hero-subtitle {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  animation: fadeInUp 0.7s ease;
+}
+
+.hero-description {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+  max-width: 750px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: fadeInUp 0.8s ease;
+}
+
+/* CTA Buttons */
+.cta-buttons {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.9s ease;
+}
+
+.btn-large {
+  padding: 1.25rem 3rem;
+  font-size: 1.1rem;
+  min-height: 56px;
+}
+
+/* Features Section */
 .features-section {
+  padding: 5rem 2rem;
+  background: transparent;
+}
+
+.features-section .container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 2.75rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  animation: fadeInUp 0.6s ease;
+}
+
+.section-subtitle {
+  font-size: 1.2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: 3.5rem;
+  animation: fadeInUp 0.7s ease;
+}
+
+.features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-  margin: 40px 0;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+  margin-top: 2rem;
 }
 
 .feature-card {
-  padding: 30px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: var(--card-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 2.5rem;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.6s ease;
+  text-align: center;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  border-color: var(--card-border-hover);
+  box-shadow: var(--shadow-lg);
+}
+
+.feature-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  display: block;
+  animation: bounce 2s infinite;
+}
+
+.feature-card:hover .feature-icon {
+  animation: pulse 1s ease;
+}
+
+.feature-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.feature-description {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* Study Modes Section */
+.modes-section {
+  padding: 5rem 2rem;
+  background: transparent;
+}
+
+.modes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.mode-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 2.5rem;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  animation: fadeInUp 0.6s ease;
+}
+
+.mode-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  border-color: var(--card-border-hover);
+  box-shadow: var(--shadow-lg);
+}
+
+.mode-icon {
+  font-size: 3rem;
+  margin-bottom: 1.25rem;
+  display: block;
+}
+
+.mode-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.mode-description {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* How It Works Section */
+.how-it-works-section {
+  padding: 5rem 2rem;
+  background: transparent;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2.5rem;
+  margin-top: 2rem;
+}
+
+.step {
+  text-align: center;
+  animation: fadeInUp 0.6s ease;
+}
+
+.step-number {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  box-shadow: var(--shadow-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step:hover .step-number {
+  transform: scale(1.15) rotate(10deg);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+}
+
+.dark-mode .step:hover .step-number {
+  box-shadow: 0 8px 24px rgba(5, 191, 219, 0.4);
+}
+
+.step-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.step-description {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Stats Section */
+.stats-section {
+  padding: 5rem 2rem;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
+  border-radius: 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stats-section .stat-card {
+  text-align: center;
+  color: white;
+  animation: fadeInUp 0.6s ease;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.stats-section .stat-card:hover {
+  transform: scale(1.05);
+  background: transparent;
+  border: none;
+}
+
+.stat-number {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  display: block;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  opacity: 0.95;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* CTA Section */
+.cta-section {
+  padding: 6rem 2rem;
+  text-align: center;
+  background: transparent;
+}
+
+.cta-title {
+  font-size: 2.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  animation: fadeInUp 0.6s ease;
+}
+
+.cta-description {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: fadeInUp 0.7s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 3.5rem 1.5rem;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.4rem;
+  }
+
+  .hero-description {
+    font-size: 1.05rem;
+  }
+
+  .section-title {
+    font-size: 2.25rem;
+  }
+
+  .section-subtitle {
+    font-size: 1.05rem;
+  }
+
+  .features-grid,
+  .modes-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .feature-card,
+  .mode-card {
+    padding: 2rem;
+  }
+
+  .steps-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .stat-number {
+    font-size: 2.75rem;
+  }
+
+  .cta-title {
+    font-size: 2.25rem;
+  }
+
+  .cta-description {
+    font-size: 1.1rem;
+  }
+
+  .features-section,
+  .modes-section,
+  .how-it-works-section,
+  .stats-section,
+  .cta-section {
+    padding: 3.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 2.5rem 1rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .btn,
+  .btn-large {
+    width: 100%;
+    min-height: 52px;
+  }
+
+  .section-title {
+    font-size: 1.85rem;
+  }
+
+  .feature-icon,
+  .mode-icon {
+    font-size: 2.75rem;
+  }
+
+  .feature-title,
+  .mode-name {
+    font-size: 1.3rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .step-number {
+    width: 60px;
+    height: 60px;
+    font-size: 1.75rem;
+  }
+
+  .features-section,
+  .modes-section,
+  .how-it-works-section,
+  .stats-section,
+  .cta-section {
+    padding: 2.5rem 1rem;
+  }
 }
