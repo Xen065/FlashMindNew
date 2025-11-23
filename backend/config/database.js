@@ -25,12 +25,22 @@ const sequelize = new Sequelize(
     pool: {
       max: 5,           // Maximum number of connections
       min: 0,           // Minimum number of connections
-      acquire: 30000,   // Maximum time to get a connection (30 seconds)
-      idle: 10000       // Maximum time a connection can be idle (10 seconds)
+      acquire: 60000,   // Maximum time to get a connection (60 seconds - increased for Render)
+      idle: 10000,      // Maximum time a connection can be idle (10 seconds)
+      evict: 1000,      // Time to run eviction to remove idle connections
+      handleDisconnects: true // Reconnect on connection errors
     },
 
     // Timezone
     timezone: '+00:00',
+
+    // SSL configuration for production (required by Render and most cloud providers)
+    dialectOptions: process.env.NODE_ENV === 'production' ? {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false // Required for Render and Heroku
+      }
+    } : {},
 
     // Define options
     define: {

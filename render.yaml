@@ -1,0 +1,67 @@
+databases:
+  - name: flashmind-db
+    databaseName: flashmind
+    user: flashmind_user
+    plan: free # Change to 'starter' for production ($7/month)
+    region: oregon
+
+services:
+  # Backend API Service
+  - type: web
+    name: flashmind-backend
+    runtime: node
+    region: oregon
+    plan: free # Change to 'starter' for production ($7/month)
+    branch: main
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_HOST
+        fromDatabase:
+          name: flashmind-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: flashmind-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: flashmind-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: flashmind-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: flashmind-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: FRONTEND_URL
+        value: https://flashmind-frontend.onrender.com
+
+  # Frontend Static Site
+  - type: web
+    name: flashmind-frontend
+    runtime: static
+    region: oregon
+    branch: main
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://flashmind-backend.onrender.com
