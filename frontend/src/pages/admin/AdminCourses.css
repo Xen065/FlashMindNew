@@ -1,0 +1,87 @@
+.admin-courses-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.admin-courses-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.admin-courses-header h1 {
+  font-size: 2rem;
+}
+
+.courses-table {
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.courses-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.courses-table th,
+.courses-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.courses-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.courses-table td.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-icon {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #667eea;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: background 0.3s;
+}
+
+.btn-icon:hover {
+  background: #5568d3;
+}
+
+.btn-icon.delete {
+  background: #f44336;
+}
+
+.btn-icon.delete:hover {
+  background: #d32f2f;
+}
+
+[data-theme='dark'] .courses-table {
+  background: #2a2a3e;
+}
+
+[data-theme='dark'] .courses-table th {
+  background: #1a1a2e;
+  color: white;
+}
+
+[data-theme='dark'] .courses-table td {
+  color: white;
+  border-bottom-color: #444;
+}

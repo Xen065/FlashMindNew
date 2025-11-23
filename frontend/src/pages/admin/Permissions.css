@@ -1,0 +1,88 @@
+.permissions-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.permissions-header {
+  margin-bottom: 2rem;
+}
+
+.permissions-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.users-table {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.users-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.users-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.role-badge.admin {
+  background: #667eea;
+  color: white;
+}
+
+.role-badge.user {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.role-select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+}
+
+[data-theme='dark'] .users-table {
+  background: #2a2a3e;
+}
+
+[data-theme='dark'] .users-table th {
+  background: #1a1a2e;
+  color: white;
+}
+
+[data-theme='dark'] .users-table td {
+  color: white;
+  border-bottom-color: #444;
+}
+
+[data-theme='dark'] .role-select {
+  background: #1a1a2e;
+  color: white;
+  border-color: #444;
+}
+
+[data-theme='dark'] .role-badge.user {
+  background: #444;
+  color: white;
+}

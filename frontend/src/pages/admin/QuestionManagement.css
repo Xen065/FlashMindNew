@@ -1,0 +1,124 @@
+.question-management-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.questions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.questions-header h1 {
+  font-size: 2rem;
+}
+
+.question-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.question-header h3 {
+  flex: 1;
+  margin: 0;
+}
+
+.question-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.question-options .option {
+  padding: 0.75rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+.question-options .option.correct {
+  border-color: #4caf50;
+  background: #e8f5e9;
+}
+
+.explanation {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.modal-content form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.modal-content form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.modal-content form input,
+.modal-content form textarea,
+.modal-content form select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  margin-bottom: 0.5rem;
+}
+
+.modal-content form input:focus,
+.modal-content form textarea:focus,
+.modal-content form select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+[data-theme='dark'] .question-card {
+  background: #2a2a3e;
+  color: white;
+}
+
+[data-theme='dark'] .question-options .option {
+  background: #1a1a2e;
+  color: white;
+}
+
+[data-theme='dark'] .question-options .option.correct {
+  background: #2d5016;
+  border-color: #4caf50;
+}
+
+[data-theme='dark'] .explanation {
+  background: #1a1a2e;
+  color: #aaa;
+}
+
+[data-theme='dark'] .modal-content form input,
+[data-theme='dark'] .modal-content form textarea,
+[data-theme='dark'] .modal-content form select {
+  background: #1a1a2e;
+  color: white;
+  border-color: #444;
+}
