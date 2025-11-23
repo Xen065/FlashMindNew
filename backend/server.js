@@ -112,6 +112,11 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
+// Import logging utilities
+const logger = require('./utils/logger');
+const requestIdMiddleware = require('./middleware/requestId');
+const responseTimeMiddleware = require('./middleware/responseTime');
+
 // Import database connection
 const db = require('./config/database');
 
@@ -146,6 +151,12 @@ const app = express();
 // Middleware Configuration
 // ============================================
 
+// Request ID middleware (must be first for all requests to have IDs)
+app.use(requestIdMiddleware);
+
+// Response time tracking and logging
+app.use(responseTimeMiddleware);
+
 // Enable CORS (Cross-Origin Resource Sharing)
 // This allows the React frontend to communicate with this backend
 app.use(cors({
@@ -158,6 +169,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // HTTP request logger (shows requests in console)
+// NOTE: Morgan is kept for development console output, but structured logging
+// is now handled by Winston in responseTimeMiddleware
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
@@ -233,28 +246,23 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  // Log error details server-side
-  const errorLog = {
-    timestamp: new Date().toISOString(),
-    method: req.method,
-    url: req.url,
-    userId: req.user?.id,
-    ip: req.ip || req.connection?.remoteAddress,
-    userAgent: req.get('user-agent')
-  };
-
   // Handle AppError instances
   if (err instanceof AppError) {
-    errorLog.code = err.code;
-    errorLog.message = err.message;
-    errorLog.statusCode = err.statusCode;
-
-    if (err.originalError) {
-      errorLog.originalError = err.originalError.message;
-      errorLog.stack = err.originalError.stack;
-    }
-
-    console.error('Application Error:', errorLog);
+    // Use structured logger
+    logger.error('Application Error', {
+      requestId: req.id,
+      code: err.code,
+      message: err.message,
+      statusCode: err.statusCode,
+      method: req.method,
+      url: req.url,
+      userId: req.user?.id,
+      ip: req.ip || req.connection?.remoteAddress,
+      userAgent: req.get('user-agent'),
+      stack: err.stack,
+      originalError: err.originalError?.message,
+      originalStack: err.originalError?.stack
+    });
 
     // Send structured error response
     return res.status(err.statusCode).json({
@@ -269,9 +277,14 @@ app.use((err, req, res, next) => {
 
   // Handle validation errors from express-validator
   if (err.name === 'ValidationError' || (err.errors && Array.isArray(err.errors))) {
-    errorLog.type = 'ValidationError';
-    errorLog.errors = err.errors;
-    console.error('Validation Error:', errorLog);
+    logger.warn('Validation Error', {
+      requestId: req.id,
+      type: 'ValidationError',
+      errors: err.errors,
+      method: req.method,
+      url: req.url,
+      userId: req.user?.id
+    });
 
     return res.status(400).json({
       success: false,
@@ -285,9 +298,14 @@ app.use((err, req, res, next) => {
 
   // Handle Sequelize errors
   if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
-    errorLog.type = err.name;
-    errorLog.errors = err.errors?.map(e => e.message);
-    console.error('Database Error:', errorLog);
+    logger.error('Database Error', {
+      requestId: req.id,
+      type: err.name,
+      errors: err.errors?.map(e => e.message),
+      method: req.method,
+      url: req.url,
+      userId: req.user?.id
+    });
 
     return res.status(400).json({
       success: false,
@@ -303,8 +321,13 @@ app.use((err, req, res, next) => {
 
   // Handle JWT errors
   if (err.name === 'JsonWebTokenError') {
-    errorLog.type = 'JsonWebTokenError';
-    console.error('JWT Error:', errorLog);
+    logger.warn('JWT Error', {
+      requestId: req.id,
+      type: 'JsonWebTokenError',
+      method: req.method,
+      url: req.url,
+      ip: req.ip || req.connection?.remoteAddress
+    });
 
     return res.status(401).json({
       success: false,
@@ -316,8 +339,13 @@ app.use((err, req, res, next) => {
   }
 
   if (err.name === 'TokenExpiredError') {
-    errorLog.type = 'TokenExpiredError';
-    console.error('JWT Expired:', errorLog);
+    logger.warn('JWT Expired', {
+      requestId: req.id,
+      type: 'TokenExpiredError',
+      method: req.method,
+      url: req.url,
+      userId: req.user?.id
+    });
 
     return res.status(401).json({
       success: false,
@@ -329,11 +357,18 @@ app.use((err, req, res, next) => {
   }
 
   // Handle unknown errors
-  errorLog.type = 'UnknownError';
-  errorLog.name = err.name;
-  errorLog.message = err.message;
-  errorLog.stack = err.stack;
-  console.error('Unknown Error:', errorLog);
+  logger.error('Unknown Error', {
+    requestId: req.id,
+    type: 'UnknownError',
+    name: err.name,
+    message: err.message,
+    stack: err.stack,
+    method: req.method,
+    url: req.url,
+    userId: req.user?.id,
+    ip: req.ip || req.connection?.remoteAddress,
+    userAgent: req.get('user-agent')
+  });
 
   // Don't leak error details in production
   const statusCode = err.status || err.statusCode || 500;
@@ -363,16 +398,24 @@ if (require.main === module) {
   // Connect to database and start server
   db.authenticate()
     .then(() => {
-      console.log('✅ Database connected successfully');
+      logger.info('Database connected successfully');
 
       // Sync database models (create tables if they don't exist)
       return db.sync({ alter: process.env.NODE_ENV === 'development' });
     })
     .then(() => {
-      console.log('✅ Database synchronized');
+      logger.info('Database synchronized');
 
       // Start listening for requests
       app.listen(PORT, () => {
+        logger.info('FlashMind API Server started', {
+          environment: process.env.NODE_ENV,
+          port: PORT,
+          url: `http://localhost:${PORT}`,
+          healthCheck: `http://localhost:${PORT}/api/health`
+        });
+
+        // Keep console output for visibility
         console.log('');
         console.log('🚀 ============================================');
         console.log(`🚀 FlashMind API Server is running!`);
@@ -385,6 +428,10 @@ if (require.main === module) {
       });
     })
     .catch(err => {
+      logger.error('Unable to start server', {
+        error: err.message,
+        stack: err.stack
+      });
       console.error('❌ Unable to start server:', err);
       process.exit(1);
     });
@@ -392,6 +439,7 @@ if (require.main === module) {
 
 // Handle graceful shutdown
 process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, closing server gracefully');
   console.log('SIGTERM received, closing server...');
   db.close();
   process.exit(0);
