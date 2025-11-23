@@ -4,21 +4,34 @@
    ==================================== */
 
 .homepage {
-  max-width: 1400px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 /* Hero Section */
 .hero-section {
-  text-align: center;
   padding: 5rem 2rem;
   animation: fadeIn 0.8s ease;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
 }
 
 .hero-content {
-  max-width: 900px;
+  max-width: 1400px;
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.hero-text {
+  text-align: left;
 }
 
 .hero-title {
@@ -46,17 +59,73 @@
   color: var(--text-secondary);
   line-height: 1.8;
   margin-bottom: 2.5rem;
-  max-width: 750px;
-  margin-left: auto;
-  margin-right: auto;
   animation: fadeInUp 0.8s ease;
+}
+
+/* Hero Visual - Floating Cards */
+.hero-visual {
+  position: relative;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-card {
+  position: absolute;
+  background: var(--card-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  animation: floatAnimation 3s ease-in-out infinite;
+}
+
+.floating-card .card-front {
+  font-size: 3.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.floating-card .card-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.floating-card.card-1 {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+  z-index: 3;
+}
+
+.floating-card.card-2 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: 1s;
+  z-index: 2;
+}
+
+.floating-card.card-3 {
+  bottom: 20%;
+  right: 10%;
+  animation-delay: 2s;
+  z-index: 1;
 }
 
 /* CTA Buttons */
 .cta-buttons {
   display: flex;
   gap: 1.25rem;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
   animation: fadeInUp 0.9s ease;
 }
@@ -95,41 +164,63 @@
   animation: fadeInUp 0.7s ease;
 }
 
-.features-grid {
+/* Features Grid Layout - 3 columns, 2 rows on desktop */
+.bento-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
   margin-top: 2rem;
 }
 
-.feature-card {
+.bento-card {
   background: var(--card-bg);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 2.5rem;
   border: 1px solid var(--card-border);
   box-shadow: var(--shadow-md);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   animation: fadeInUp 0.6s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
 }
 
-.feature-card:hover {
-  transform: translateY(-8px) scale(1.03);
+.bento-card:hover {
+  transform: translateY(-8px);
   border-color: var(--card-border-hover);
   box-shadow: var(--shadow-lg);
 }
 
-.feature-icon {
-  font-size: 3.5rem;
-  margin-bottom: 1.5rem;
-  display: block;
-  animation: bounce 2s infinite;
+.bento-icon-wrapper {
+  flex-shrink: 0;
+  min-width: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.feature-card:hover .feature-icon {
+.feature-icon {
+  font-size: 3.5rem;
+  display: block;
+  animation: bounce 2s infinite;
+  transition: transform 0.3s ease;
+}
+
+.bento-card:hover .feature-icon {
   animation: pulse 1s ease;
+  transform: scale(1.1);
+}
+
+.bento-content {
+  flex: 1;
+  text-align: center;
 }
 
 .feature-title {
@@ -145,42 +236,83 @@
   line-height: 1.7;
 }
 
-/* Study Modes Section */
+/* Study Modes Section - 3 Column Grid */
 .modes-section {
   padding: 5rem 2rem;
   background: transparent;
 }
 
-.modes-grid {
+.timeline-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
   margin-top: 2rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.mode-card {
+.timeline-line {
+  display: none;
+}
+
+.timeline-card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.5rem;
   background: var(--card-bg);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border-radius: 20px;
-  padding: 2.5rem;
+  padding: 2rem;
   border: 1px solid var(--card-border);
   box-shadow: var(--shadow-md);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   animation: fadeInUp 0.6s ease;
 }
 
-.mode-card:hover {
-  transform: translateY(-5px) scale(1.02);
+.timeline-card:hover {
+  transform: translateY(-8px);
   border-color: var(--card-border-hover);
   box-shadow: var(--shadow-lg);
 }
 
-.mode-icon {
-  font-size: 3rem;
-  margin-bottom: 1.25rem;
-  display: block;
+.timeline-milestone {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-primary);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timeline-card:hover .timeline-milestone {
+  transform: scale(1.15) rotate(10deg);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+}
+
+.dark-mode .timeline-card:hover .timeline-milestone {
+  box-shadow: 0 8px 24px rgba(5, 191, 219, 0.4);
+}
+
+.milestone-icon {
+  font-size: 2.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.timeline-content {
+  text-align: left;
+  flex: 1;
+}
+
+.timeline-connector {
+  display: none;
 }
 
 .mode-name {
@@ -196,47 +328,92 @@
   line-height: 1.6;
 }
 
-/* How It Works Section */
+/* How It Works Section - 4 Column Grid */
 .how-it-works-section {
   padding: 5rem 2rem;
   background: transparent;
 }
 
-.steps-grid {
+.steps-flow {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
   margin-top: 2rem;
+  padding-top: 2rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  gap: 1.5rem;
   animation: fadeInUp 0.6s ease;
+  background: var(--card-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 2.5rem;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-md);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  height: 100%;
+}
+
+.step:hover {
+  transform: translateY(-8px);
+  border-color: var(--card-border-hover);
+  box-shadow: var(--shadow-lg);
 }
 
 .step-number {
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
   color: white;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.5rem;
   box-shadow: var(--shadow-primary);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .step:hover .step-number {
-  transform: scale(1.15) rotate(10deg);
+  transform: translateX(-50%) scale(1.15) rotate(10deg);
   box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
 }
 
 .dark-mode .step:hover .step-number {
   box-shadow: 0 8px 24px rgba(5, 191, 219, 0.4);
+}
+
+.step-icon {
+  font-size: 3rem;
+  flex-shrink: 0;
+  min-width: 60px;
+  display: flex;
+  justify-content: center;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.step:hover .step-icon {
+  animation: pulse 1s ease;
+}
+
+.step-content {
+  flex: 1;
+  text-align: center;
 }
 
 .step-title {
@@ -252,6 +429,10 @@
   line-height: 1.6;
 }
 
+.flow-arrow {
+  display: none;
+}
+
 /* Stats Section */
 .stats-section {
   padding: 5rem 2rem;
@@ -261,33 +442,42 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 3rem;
-  max-width: 1200px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .stats-section .stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  gap: 1rem;
+  padding: 2.5rem 2rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   animation: fadeInUp 0.6s ease;
-  background: transparent;
-  border: none;
-  box-shadow: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .stats-section .stat-card:hover {
-  transform: scale(1.05);
-  background: transparent;
-  border: none;
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .stat-number {
   font-size: 3.5rem;
   font-weight: 800;
-  margin-bottom: 0.5rem;
   display: block;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
 }
 
 .stat-label {
@@ -296,6 +486,7 @@
   opacity: 0.95;
   text-transform: uppercase;
   letter-spacing: 1px;
+  text-align: center;
 }
 
 /* CTA Section */
@@ -327,6 +518,31 @@
 @media (max-width: 768px) {
   .hero-section {
     padding: 3.5rem 1.5rem;
+    min-height: auto;
+  }
+
+  .hero-content {
+    gap: 2.5rem;
+  }
+
+  .hero-text {
+    text-align: center;
+  }
+
+  .hero-visual {
+    height: 300px;
+  }
+
+  .floating-card {
+    padding: 1.5rem;
+  }
+
+  .floating-card .card-front {
+    font-size: 2.5rem;
+  }
+
+  .cta-buttons {
+    justify-content: center;
   }
 
   .hero-title {
@@ -349,25 +565,40 @@
     font-size: 1.05rem;
   }
 
-  .features-grid,
-  .modes-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+  /* Responsive Grid Layouts for Tablet */
+  .bento-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  .feature-card,
-  .mode-card {
-    padding: 2rem;
+  .timeline-container {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  .steps-grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .stats-grid {
+  .steps-flow {
     grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
+  }
+
+  /* Cards already centered, no need to change flex-direction */
+  .bento-card,
+  .timeline-card,
+  .step {
+    padding: 1.5rem;
+  }
+
+  .bento-icon-wrapper,
+  .step-icon {
+    margin-bottom: 0;
+  }
+
+  .stats-section .stat-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem;
+    gap: 1rem;
+  }
+
+  .stat-label {
+    text-align: center;
   }
 
   .stat-number {
@@ -394,6 +625,22 @@
 @media (max-width: 480px) {
   .hero-section {
     padding: 2.5rem 1rem;
+  }
+
+  .hero-visual {
+    height: 250px;
+  }
+
+  .floating-card {
+    padding: 1rem;
+  }
+
+  .floating-card .card-front {
+    font-size: 2rem;
+  }
+
+  .floating-card .card-label {
+    font-size: 0.85rem;
   }
 
   .hero-title {
@@ -423,8 +670,16 @@
     font-size: 1.85rem;
   }
 
+  /* Responsive Grid Layouts for Mobile */
+  .bento-grid,
+  .timeline-container,
+  .steps-flow {
+    grid-template-columns: 1fr;
+  }
+
   .feature-icon,
-  .mode-icon {
+  .milestone-icon,
+  .step-icon {
     font-size: 2.75rem;
   }
 
@@ -433,15 +688,34 @@
     font-size: 1.3rem;
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+  .bento-card,
+  .timeline-card,
+  .step {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .timeline-milestone {
+    width: 70px;
+    height: 70px;
+  }
+
+  .milestone-icon {
+    font-size: 2rem;
   }
 
   .step-number {
-    width: 60px;
-    height: 60px;
-    font-size: 1.75rem;
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+
+  .stats-section .stat-card {
+    padding: 1.5rem;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
   }
 
   .features-section,

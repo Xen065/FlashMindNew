@@ -642,6 +642,24 @@ select:hover {
   }
 }
 
+@keyframes floatAnimation {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes slideHorizontal {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+}
+
 /* Animation utility classes */
 .animate-fadeIn {
   animation: fadeIn 0.5s ease;
@@ -665,6 +683,14 @@ select:hover {
 
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-float {
+  animation: floatAnimation 3s ease-in-out infinite;
+}
+
+.animate-slideHorizontal {
+  animation: slideHorizontal 1.5s ease-in-out infinite;
 }
 
 /* ============ Loading States ============ */

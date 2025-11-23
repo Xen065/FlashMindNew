@@ -5,7 +5,6 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { AdminProvider } from './contexts/AdminContext';
 import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
-import ThemeToggle from './components/ThemeToggle';
 import Homepage from './pages/Homepage';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -30,7 +29,6 @@ function App() {
           <AdminProvider>
             <div className="App">
               <Navigation />
-              <ThemeToggle />
               <main className="main-content">
                 <Routes>
                   {/* Public routes */}

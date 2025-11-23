@@ -62,26 +62,42 @@ const Homepage = () => {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
-          <h1 className="hero-title">Welcome to FlashMind</h1>
-          <p className="hero-subtitle">Master Any Subject with Science-Backed Spaced Repetition</p>
-          <p className="hero-description">
-            Transform the way you learn with intelligent flashcards, gamification, and powerful study tools designed for students and lifelong learners.
-          </p>
-          <div className="cta-buttons">
-            {!user ? (
-              <>
-                <Link to="/register" className="btn btn-primary">
-                  Get Started Free
+          <div className="hero-text">
+            <h1 className="hero-title">Welcome to FlashMind</h1>
+            <p className="hero-subtitle">Master Any Subject with Science-Backed Spaced Repetition</p>
+            <p className="hero-description">
+              Transform the way you learn with intelligent flashcards, gamification, and powerful study tools designed for students and lifelong learners.
+            </p>
+            <div className="cta-buttons">
+              {!user ? (
+                <>
+                  <Link to="/register" className="btn btn-primary">
+                    Get Started Free
+                  </Link>
+                  <Link to="/login" className="btn btn-secondary">
+                    Login
+                  </Link>
+                </>
+              ) : (
+                <Link to="/dashboard" className="btn btn-primary">
+                  Go to Dashboard
                 </Link>
-                <Link to="/login" className="btn btn-secondary">
-                  Login
-                </Link>
-              </>
-            ) : (
-              <Link to="/dashboard" className="btn btn-primary">
-                Go to Dashboard
-              </Link>
-            )}
+              )}
+            </div>
+          </div>
+          <div className="hero-visual">
+            <div className="floating-card card-1">
+              <div className="card-front">🧠</div>
+              <div className="card-label">Smart Learning</div>
+            </div>
+            <div className="floating-card card-2">
+              <div className="card-front">📊</div>
+              <div className="card-label">Track Progress</div>
+            </div>
+            <div className="floating-card card-3">
+              <div className="card-front">🎯</div>
+              <div className="card-label">Achieve Goals</div>
+            </div>
           </div>
         </div>
       </section>
@@ -92,12 +108,16 @@ const Homepage = () => {
           <h2 className="section-title">Everything You Need to Excel</h2>
           <p className="section-subtitle">Powerful features designed to accelerate your learning journey</p>
 
-          <div className="features-grid">
+          <div className="bento-grid">
             {features.map((feature, index) => (
-              <div key={index} className="feature-card">
-                <div className="feature-icon">{feature.icon}</div>
-                <h3 className="feature-title">{feature.title}</h3>
-                <p className="feature-description">{feature.description}</p>
+              <div key={index} className={`bento-card bento-card-${index + 1}`}>
+                <div className="bento-icon-wrapper">
+                  <div className="feature-icon">{feature.icon}</div>
+                </div>
+                <div className="bento-content">
+                  <h3 className="feature-title">{feature.title}</h3>
+                  <p className="feature-description">{feature.description}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -110,12 +130,18 @@ const Homepage = () => {
           <h2 className="section-title">Choose Your Study Pace</h2>
           <p className="section-subtitle">Customize your learning frequency to match your goals</p>
 
-          <div className="modes-grid">
+          <div className="timeline-container">
+            <div className="timeline-line"></div>
             {studyModes.map((mode, index) => (
-              <div key={index} className="mode-card">
-                <div className="mode-icon">{mode.icon}</div>
-                <h3 className="mode-name">{mode.mode}</h3>
-                <p className="mode-description">{mode.description}</p>
+              <div key={index} className={`timeline-card timeline-${index + 1}`}>
+                <div className="timeline-milestone">
+                  <div className="milestone-icon">{mode.icon}</div>
+                </div>
+                <div className="timeline-content">
+                  <h3 className="mode-name">{mode.mode}</h3>
+                  <p className="mode-description">{mode.description}</p>
+                </div>
+                {index < studyModes.length - 1 && <div className="timeline-connector"></div>}
               </div>
             ))}
           </div>
@@ -126,26 +152,38 @@ const Homepage = () => {
       <section className="how-it-works-section">
         <div className="container">
           <h2 className="section-title">How It Works</h2>
-          <div className="steps-grid">
+          <div className="steps-flow">
             <div className="step">
               <div className="step-number">1</div>
-              <h3 className="step-title">Browse Courses</h3>
-              <p className="step-description">Choose from a variety of courses or create your own custom decks</p>
+              <div className="step-icon">📚</div>
+              <div className="step-content">
+                <h3 className="step-title">Browse Courses</h3>
+                <p className="step-description">Choose from a variety of courses or create your own custom decks</p>
+              </div>
             </div>
             <div className="step">
               <div className="step-number">2</div>
-              <h3 className="step-title">Study Smart</h3>
-              <p className="step-description">Our algorithm shows you cards at the perfect time for maximum retention</p>
+              <div className="step-icon">🧠</div>
+              <div className="step-content">
+                <h3 className="step-title">Study Smart</h3>
+                <p className="step-description">Our algorithm shows you cards at the perfect time for maximum retention</p>
+              </div>
             </div>
             <div className="step">
               <div className="step-number">3</div>
-              <h3 className="step-title">Track Progress</h3>
-              <p className="step-description">Monitor your growth with detailed analytics and achievement unlocks</p>
+              <div className="step-icon">📈</div>
+              <div className="step-content">
+                <h3 className="step-title">Track Progress</h3>
+                <p className="step-description">Monitor your growth with detailed analytics and achievement unlocks</p>
+              </div>
             </div>
             <div className="step">
               <div className="step-number">4</div>
-              <h3 className="step-title">Master Content</h3>
-              <p className="step-description">Achieve long-term retention and ace your exams with confidence</p>
+              <div className="step-icon">🏆</div>
+              <div className="step-content">
+                <h3 className="step-title">Master Content</h3>
+                <p className="step-description">Achieve long-term retention and ace your exams with confidence</p>
+              </div>
             </div>
           </div>
         </div>
