@@ -17,7 +17,7 @@
 
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, #14B8A6 0%, #0F766E 100%);
+  background: linear-gradient(135deg, #5EEAD4 0%, #2DD4BF 100%);
   color: white;
   padding: 6rem 2rem;
   text-align: center;
@@ -71,7 +71,7 @@
 
 .btn-primary {
   background-color: white;
-  color: #14B8A6;
+  color: #2DD4BF;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -88,7 +88,7 @@
 
 .btn-secondary:hover {
   background-color: white;
-  color: #14B8A6;
+  color: #2DD4BF;
 }
 
 .btn-large {
@@ -151,8 +151,8 @@
 
 .feature-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(20, 184, 166, 0.15);
-  border-color: #14B8A6;
+  box-shadow: 0 12px 24px rgba(45, 212, 191, 0.2);
+  border-color: #2DD4BF;
 }
 
 .feature-icon {
@@ -164,7 +164,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
-  color: #14B8A6;
+  color: #2DD4BF;
 }
 
 .feature-description {
@@ -179,8 +179,8 @@
 }
 
 [data-theme='dark'] .feature-card:hover {
-  border-color: #14B8A6;
-  box-shadow: 0 12px 24px rgba(20, 184, 166, 0.2);
+  border-color: #2DD4BF;
+  box-shadow: 0 12px 24px rgba(45, 212, 191, 0.25);
 }
 
 [data-theme='dark'] .feature-description {
@@ -190,7 +190,7 @@
 /* Study Modes Section */
 .modes-section {
   padding: 5rem 0;
-  background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+  background: linear-gradient(135deg, #ECFDF5 0%, #A7F3D0 100%);
 }
 
 [data-theme='dark'] .modes-section {
@@ -215,8 +215,8 @@
 
 .mode-card:hover {
   transform: scale(1.05);
-  border-color: #14B8A6;
-  box-shadow: 0 8px 16px rgba(20, 184, 166, 0.2);
+  border-color: #2DD4BF;
+  box-shadow: 0 8px 16px rgba(45, 212, 191, 0.25);
 }
 
 .mode-icon {
@@ -228,7 +228,7 @@
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
-  color: #14B8A6;
+  color: #2DD4BF;
 }
 
 .mode-description {
@@ -242,7 +242,7 @@
 }
 
 [data-theme='dark'] .mode-card:hover {
-  border-color: #14B8A6;
+  border-color: #2DD4BF;
 }
 
 [data-theme='dark'] .mode-description {
@@ -274,7 +274,7 @@
 .step-number {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #14B8A6, #0F766E);
+  background: linear-gradient(135deg, #5EEAD4, #2DD4BF);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -283,7 +283,7 @@
   font-size: 1.75rem;
   font-weight: 700;
   margin: 0 auto 1.5rem;
-  box-shadow: 0 4px 8px rgba(20, 184, 166, 0.3);
+  box-shadow: 0 4px 8px rgba(45, 212, 191, 0.4);
 }
 
 .step-title {
@@ -310,7 +310,7 @@
 /* Stats Section */
 .stats-section {
   padding: 5rem 0;
-  background: linear-gradient(135deg, #14B8A6 0%, #0F766E 100%);
+  background: linear-gradient(135deg, #5EEAD4 0%, #2DD4BF 100%);
   color: white;
 }
 
@@ -329,7 +329,7 @@
   font-size: 3.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #fff, #ccfbf1);
+  background: linear-gradient(135deg, #fff, #A7F3D0);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
