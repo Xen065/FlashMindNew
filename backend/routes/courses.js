@@ -59,6 +59,41 @@ router.get('/', optionalAuth, async (req, res) => {
 });
 
 /**
+ * @route   GET /api/courses/my/enrolled
+ * @desc    Get user's enrolled courses
+ * @access  Private
+ * NOTE: This route MUST be defined before /:id to avoid matching "my" as an ID
+ */
+router.get('/my/enrolled', protect, async (req, res) => {
+  try {
+    const enrollments = await UserCourse.findAll({
+      where: {
+        userId: req.user.id,
+        isActive: true
+      },
+      include: [{
+        model: Course,
+        as: 'Course'
+      }]
+    });
+
+    res.json({
+      success: true,
+      data: {
+        enrollments,
+        count: enrollments.length
+      }
+    });
+  } catch (error) {
+    console.error('Get enrolled courses error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching enrolled courses'
+    });
+  }
+});
+
+/**
  * @route   GET /api/courses/:id
  * @desc    Get single course by ID
  * @access  Public
@@ -182,40 +217,6 @@ router.post('/:id/enroll', protect, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error enrolling in course'
-    });
-  }
-});
-
-/**
- * @route   GET /api/courses/my/enrolled
- * @desc    Get user's enrolled courses
- * @access  Private
- */
-router.get('/my/enrolled', protect, async (req, res) => {
-  try {
-    const enrollments = await UserCourse.findAll({
-      where: {
-        userId: req.user.id,
-        isActive: true
-      },
-      include: [{
-        model: Course,
-        as: 'Course'
-      }]
-    });
-
-    res.json({
-      success: true,
-      data: {
-        enrollments,
-        count: enrollments.length
-      }
-    });
-  } catch (error) {
-    console.error('Get enrolled courses error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching enrolled courses'
     });
   }
 });

@@ -7,6 +7,7 @@
 
 const express = require('express');
 const router = express.Router();
+const { body, validationResult } = require('express-validator');
 const { protect } = require('../middleware/auth');
 const { User } = require('../models');
 
@@ -36,8 +37,38 @@ router.get('/profile', protect, async (req, res) => {
  * @desc    Update user profile
  * @access  Private
  */
-router.put('/profile', protect, async (req, res) => {
+router.put('/profile', protect, [
+  body('fullName')
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage('Full name must be between 1 and 100 characters')
+    .escape(), // Sanitize HTML
+  body('bio')
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage('Bio must not exceed 1000 characters')
+    .escape(), // Sanitize HTML
+  body('avatar')
+    .optional()
+    .trim()
+    .isURL()
+    .withMessage('Avatar must be a valid URL')
+    .isLength({ max: 255 })
+    .withMessage('Avatar URL must not exceed 255 characters')
+], async (req, res) => {
   try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: errors.array()
+      });
+    }
+
     const { fullName, bio, avatar } = req.body;
 
     const user = await User.findByPk(req.user.id);

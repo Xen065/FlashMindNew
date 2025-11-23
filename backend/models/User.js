@@ -160,6 +160,18 @@ const User = sequelize.define('User', {
     field: 'is_email_verified'
   },
 
+  emailVerificationToken: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'email_verification_token'
+  },
+
+  emailVerificationExpires: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'email_verification_expires'
+  },
+
   // Timestamps (createdAt and updatedAt are added automatically by Sequelize)
 
 }, {

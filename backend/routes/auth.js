@@ -8,8 +8,11 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
-const { User } = require('../models');
-const { generateToken } = require('../utils/jwt');
+const crypto = require('crypto');
+const { User, PasswordReset, RefreshToken } = require('../models');
+const { generateToken, generateTokenPair, verifyToken } = require('../utils/jwt');
+const { loginLimiter, registerLimiter } = require('../middleware/rateLimiter');
+const { sendPasswordResetEmail, sendEmailVerification } = require('../utils/email');
 
 /**
  * @route   POST /api/auth/register
@@ -18,6 +21,7 @@ const { generateToken } = require('../utils/jwt');
  */
 router.post(
   '/register',
+  registerLimiter, // Rate limiting: 10 registrations per hour per IP
   [
     body('username')
       .trim()
@@ -69,13 +73,23 @@ router.post(
         });
       }
 
+      // Generate email verification token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
       // Create new user (password will be hashed automatically by model hook)
       const user = await User.create({
         username,
         email,
         password,
-        fullName: fullName || username
+        fullName: fullName || username,
+        emailVerificationToken: verificationToken,
+        emailVerificationExpires: verificationExpires
       });
+
+      // Send verification email (don't await - fire and forget)
+      sendEmailVerification(email, verificationToken, user.fullName || username)
+        .catch(err => console.error('Failed to send verification email:', err));
 
       // Generate JWT token
       const token = generateToken(user.id);
@@ -83,7 +97,7 @@ router.post(
       // Return user data (without password)
       res.status(201).json({
         success: true,
-        message: 'User registered successfully',
+        message: 'User registered successfully. Please check your email to verify your account.',
         data: {
           user: user.getPublicProfile(),
           token
@@ -107,6 +121,7 @@ router.post(
  */
 router.post(
   '/login',
+  loginLimiter, // Rate limiting: 5 login attempts per 15 minutes per IP
   [
     body('email')
       .trim()
@@ -200,6 +215,417 @@ router.get('/me', require('../middleware/auth').protect, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching user data'
+    });
+  }
+});
+
+/**
+ * @route   POST /api/auth/forgot-password
+ * @desc    Request password reset (sends email with reset token)
+ * @access  Public
+ */
+router.post(
+  '/forgot-password',
+  loginLimiter, // Reuse login limiter to prevent abuse
+  [
+    body('email')
+      .trim()
+      .isEmail()
+      .withMessage('Please provide a valid email')
+      .normalizeEmail()
+  ],
+  async (req, res) => {
+    try {
+      // Check for validation errors
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation error',
+          errors: errors.array()
+        });
+      }
+
+      const { email } = req.body;
+
+      // Find user by email
+      const user = await User.findOne({ where: { email } });
+
+      // Always return success to prevent email enumeration
+      // (don't reveal whether email exists in system)
+      if (!user) {
+        return res.json({
+          success: true,
+          message: 'If that email exists, a password reset link has been sent'
+        });
+      }
+
+      // Generate secure random token
+      const resetToken = crypto.randomBytes(32).toString('hex');
+
+      // Create password reset record (expires in 1 hour)
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 1);
+
+      await PasswordReset.create({
+        userId: user.id,
+        token: resetToken,
+        expiresAt,
+        requestIp: req.ip || req.connection.remoteAddress
+      });
+
+      // Send password reset email
+      try {
+        await sendPasswordResetEmail(email, resetToken, user.fullName || user.username);
+      } catch (emailError) {
+        console.error('Failed to send password reset email:', emailError);
+        // Don't reveal email sending failure to user for security
+      }
+
+      res.json({
+        success: true,
+        message: 'If that email exists, a password reset link has been sent'
+      });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error processing password reset request',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+);
+
+/**
+ * @route   POST /api/auth/reset-password
+ * @desc    Reset password using token from email
+ * @access  Public
+ */
+router.post(
+  '/reset-password',
+  [
+    body('token')
+      .notEmpty()
+      .withMessage('Reset token is required'),
+    body('newPassword')
+      .isLength({ min: 6 })
+      .withMessage('Password must be at least 6 characters')
+  ],
+  async (req, res) => {
+    try {
+      // Check for validation errors
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation error',
+          errors: errors.array()
+        });
+      }
+
+      const { token, newPassword } = req.body;
+
+      // Find the password reset record
+      const passwordReset = await PasswordReset.findOne({
+        where: { token },
+        include: [{
+          model: User,
+          as: 'user'
+        }]
+      });
+
+      // Validate token exists and is valid
+      if (!passwordReset || !passwordReset.isValid()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid or expired reset token'
+        });
+      }
+
+      // Update user's password (will be auto-hashed by User model hook)
+      const user = passwordReset.user;
+      user.password = newPassword;
+      await user.save();
+
+      // Mark token as used
+      passwordReset.used = true;
+      passwordReset.usedAt = new Date();
+      passwordReset.usedIp = req.ip || req.connection.remoteAddress;
+      await passwordReset.save();
+
+      res.json({
+        success: true,
+        message: 'Password reset successfully. You can now log in with your new password.'
+      });
+    } catch (error) {
+      console.error('Reset password error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error resetting password',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+);
+
+/**
+ * @route   GET /api/auth/verify-email/:token
+ * @desc    Verify user email address
+ * @access  Public
+ */
+router.get('/verify-email/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    // Find user with matching token that hasn't expired
+    const user = await User.findOne({
+      where: {
+        emailVerificationToken: token,
+        emailVerificationExpires: {
+          [require('sequelize').Op.gt]: new Date()
+        }
+      }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification token'
+      });
+    }
+
+    // Check if already verified
+    if (user.isEmailVerified) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is already verified'
+      });
+    }
+
+    // Mark email as verified and clear verification token
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Email verified successfully! You can now access all features.'
+    });
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error verifying email',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+/**
+ * @route   POST /api/auth/resend-verification
+ * @desc    Resend email verification link
+ * @access  Private (requires authentication)
+ */
+router.post('/resend-verification', require('../middleware/auth').protect, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Check if already verified
+    if (user.isEmailVerified) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is already verified'
+      });
+    }
+
+    // Generate new verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    user.emailVerificationToken = verificationToken;
+    user.emailVerificationExpires = verificationExpires;
+    await user.save();
+
+    // Send verification email
+    await sendEmailVerification(user.email, verificationToken, user.fullName || user.username);
+
+    res.json({
+      success: true,
+      message: 'Verification email sent. Please check your inbox.'
+    });
+  } catch (error) {
+    console.error('Resend verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending verification email',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+/**
+ * @route   POST /api/auth/refresh
+ * @desc    Refresh access token using refresh token
+ * @access  Public
+ */
+router.post('/refresh', [
+  body('refreshToken')
+    .notEmpty()
+    .withMessage('Refresh token is required')
+], async (req, res) => {
+  try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: errors.array()
+      });
+    }
+
+    const { refreshToken } = req.body;
+
+    // Verify refresh token signature
+    let decoded;
+    try {
+      decoded = verifyToken(refreshToken);
+    } catch (error) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid refresh token'
+      });
+    }
+
+    // Check token type
+    if (decoded.type !== 'refresh') {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid token type'
+      });
+    }
+
+    // Check if token exists in database and is not revoked
+    const storedToken = await RefreshToken.findOne({
+      where: { token: refreshToken }
+    });
+
+    if (!storedToken) {
+      return res.status(401).json({
+        success: false,
+        message: 'Refresh token not found'
+      });
+    }
+
+    // Check if token is active (not revoked and not expired)
+    if (!storedToken.isActive()) {
+      return res.status(401).json({
+        success: false,
+        message: storedToken.revoked
+          ? 'Refresh token has been revoked'
+          : 'Refresh token has expired'
+      });
+    }
+
+    // Verify user still exists
+    const user = await User.findByPk(decoded.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Verify user is still active
+    if (!user.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: 'User account is deactivated'
+      });
+    }
+
+    // Generate new token pair
+    const newTokens = generateTokenPair(decoded.id);
+
+    // Revoke old refresh token (token rotation)
+    await storedToken.revoke(newTokens.refreshToken);
+
+    // Store new refresh token
+    await RefreshToken.create({
+      userId: decoded.id,
+      token: newTokens.refreshToken,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.get('user-agent')
+    });
+
+    res.json({
+      success: true,
+      message: 'Tokens refreshed successfully',
+      data: {
+        accessToken: newTokens.accessToken,
+        refreshToken: newTokens.refreshToken
+      }
+    });
+  } catch (error) {
+    console.error('Refresh token error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error refreshing token',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+/**
+ * @route   POST /api/auth/logout
+ * @desc    Revoke refresh token (logout)
+ * @access  Private
+ */
+router.post('/logout', require('../middleware/auth').protect, [
+  body('refreshToken')
+    .optional()
+    .notEmpty()
+    .withMessage('Refresh token must not be empty if provided')
+], async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (refreshToken) {
+      // Revoke specific refresh token
+      const token = await RefreshToken.findOne({
+        where: { token: refreshToken, userId: req.user.id }
+      });
+
+      if (token) {
+        await token.revoke();
+      }
+    } else {
+      // Revoke all refresh tokens for this user (logout from all devices)
+      await RefreshToken.revokeAllUserTokens(req.user.id);
+    }
+
+    res.json({
+      success: true,
+      message: refreshToken
+        ? 'Logged out successfully'
+        : 'Logged out from all devices successfully'
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error logging out',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
