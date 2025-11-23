@@ -48,6 +48,10 @@
   margin-bottom: 20px;
 }
 
+.study-grid.with-flashcards {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .study-card {
   background: var(--card-background, #ffffff);
   border-radius: 12px;
@@ -111,6 +115,23 @@
   grid-row: 2;
   max-height: 500px;
   overflow: hidden;
+}
+
+.flashcards-section {
+  grid-column: 2;
+  grid-row: 1;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.study-grid.with-flashcards .calendar-section {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.study-grid.with-flashcards .notes-section {
+  grid-column: 3;
+  grid-row: 2;
 }
 
 .quick-actions {
@@ -199,13 +220,83 @@
   padding: 0 30px;
 }
 
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+.flashcards-modal {
+  width: 100%;
+  max-width: 800px;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .study-grid.with-flashcards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .study-grid.with-flashcards .flashcards-section {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .study-grid.with-flashcards .calendar-section {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .study-grid.with-flashcards .todo-section {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .study-grid.with-flashcards .notes-section {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
 @media (max-width: 1024px) {
-  .study-grid {
+  .study-grid,
+  .study-grid.with-flashcards {
     grid-template-columns: 1fr;
   }
 
   .pomodoro-section,
+  .flashcards-section,
   .calendar-section,
   .todo-section,
   .notes-section {
