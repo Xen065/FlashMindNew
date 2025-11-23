@@ -159,10 +159,9 @@ app.use(responseTimeMiddleware);
 
 // Enable CORS (Cross-Origin Resource Sharing)
 // This allows the React frontend to communicate with this backend
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
-}));
+// Import CORS configuration with origin validation
+const corsOptions = require('./middleware/cors');
+app.use(cors(corsOptions));
 
 // Parse JSON request bodies
 app.use(bodyParser.json());
