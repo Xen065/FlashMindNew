@@ -107,7 +107,7 @@
 
 .btn-primary:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 12px 24px rgba(20, 184, 166, 0.4);
 }
 
 .btn-primary:active {

@@ -9,7 +9,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10000;
+  z-index: 1001;
   padding: 20px;
   overflow-y: auto;
 }
@@ -190,7 +190,7 @@
 
 .level-btn.active {
   background: rgba(255, 255, 255, 0.9);
-  color: #667eea;
+  color: #5651d6;
   font-weight: bold;
 }
 
@@ -397,7 +397,7 @@
 .cursor-blink {
   font-size: 2rem;
   animation: blink 1s infinite;
-  color: #667eea;
+  color: #5651d6;
 }
 
 @keyframes blink {
@@ -799,7 +799,7 @@
 
 .period-btn.active {
   background: white;
-  color: #667eea;
+  color: #5651d6;
   font-weight: bold;
 }
 
@@ -898,7 +898,7 @@
 .score-value {
   font-size: 1.3rem;
   font-weight: bold;
-  color: #667eea;
+  color: #5651d6;
 }
 
 .score-label {
@@ -986,7 +986,7 @@
 
 .topic-stat-accuracy {
   font-weight: bold;
-  color: #667eea;
+  color: #5651d6;
 }
 
 .topic-stat-bar {
@@ -1067,7 +1067,7 @@
 .game-rank {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #667eea;
+  color: #5651d6;
   min-width: 40px;
 }
 

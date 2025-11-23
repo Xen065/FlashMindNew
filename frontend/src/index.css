@@ -1,8 +1,8 @@
 :root {
   /* Primary Colors */
-  --primary-color: #10B981;
-  --primary-color-light: #059669;
-  --primary-color-dark: #047857;
+  --primary-color: #14B8A6;
+  --primary-color-light: #0D9488;
+  --primary-color-dark: #0F766E;
 
   /* Background Colors */
   --bg-primary: #ffffff;
@@ -15,19 +15,19 @@
   /* Text Colors */
   --text-primary: #111827;
   --text-secondary: #6b7280;
-  --text-tertiary: #9ca3af;
+  --text-tertiary: #6b7280;
 
   /* Border Colors */
   --border-color: #e5e7eb;
   --nav-border: rgba(0, 0, 0, 0.1);
   --input-border: #d1d5db;
-  --card-border-hover: #10B981;
+  --card-border-hover: #14B8A6;
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-primary: 0 4px 15px rgba(16, 185, 129, 0.3);
+  --shadow-primary: 0 4px 15px rgba(20, 184, 166, 0.3);
 }
 
 * {
@@ -114,7 +114,7 @@ code {
   outline: none;
   border-color: var(--primary-color);
   background: var(--input-focus-bg);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
 }
 
 .error-message {

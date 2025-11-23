@@ -77,7 +77,7 @@
 
 .complete-polygon-btn {
   padding: 6px 12px;
-  background: #10B981;
+  background: #14B8A6;
   color: white;
   border: none;
   border-radius: 6px;
@@ -88,7 +88,7 @@
 }
 
 .complete-polygon-btn:hover {
-  background: #059669;
+  background: #0D9488;
   transform: translateY(-1px);
 }
 
