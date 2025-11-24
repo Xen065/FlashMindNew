@@ -50,6 +50,7 @@ const config = {
     studyNotes: process.env.REACT_APP_ENABLE_STUDY_NOTES !== 'false',
     studyCalendar: process.env.REACT_APP_ENABLE_STUDY_CALENDAR !== 'false',
     mathTrick: process.env.REACT_APP_ENABLE_MATH_TRICK !== 'false',
+    flashcards: process.env.REACT_APP_ENABLE_FLASHCARDS !== 'false', // Default enabled
   },
 
   // App Settings

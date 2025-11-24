@@ -196,6 +196,34 @@ export const coursesAPI = {
 
 /**
  * ============================================
+ * FLASHCARDS / CARDS API
+ * ============================================
+ */
+export const cardsAPI = {
+  // Get all user's cards
+  getAll: (params = {}) => api.get(config.endpoints.cards, { params }),
+
+  // Get cards due for review
+  getDue: (params = {}) => api.get(`${config.endpoints.cards}/due`, { params }),
+
+  // Get single card
+  getById: (cardId) => api.get(`${config.endpoints.cards}/${cardId}`),
+
+  // Create new card
+  create: (cardData) => api.post(config.endpoints.cards, cardData),
+
+  // Update card
+  update: (cardId, cardData) => api.put(`${config.endpoints.cards}/${cardId}`, cardData),
+
+  // Delete card (soft delete)
+  delete: (cardId) => api.delete(`${config.endpoints.cards}/${cardId}`),
+
+  // Submit card review (for spaced repetition)
+  review: (cardId, reviewData) => api.post(`${config.endpoints.cards}/${cardId}/review`, reviewData),
+};
+
+/**
+ * ============================================
  * STUDY SESSIONS API
  * ============================================
  */

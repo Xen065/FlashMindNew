@@ -1,0 +1,286 @@
+.flashcard-viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.flashcard {
+  width: 100%;
+  height: 400px;
+  perspective: 1000px;
+  cursor: pointer;
+  position: relative;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: white;
+  border: 2px solid #e0e0e0;
+}
+
+.flashcard-front {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.flashcard-back {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  transform: rotateY(180deg);
+}
+
+.card-type-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+}
+
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.card-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+}
+
+.card-text {
+  font-size: 1.5rem;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 500;
+}
+
+.card-hint {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+}
+
+.hint-label {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.card-explanation {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: left;
+  backdrop-filter: blur(10px);
+}
+
+.explanation-label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.card-explanation p {
+  margin: 0;
+}
+
+.flip-instruction {
+  text-align: center;
+  font-size: 0.875rem;
+  opacity: 0.8;
+  margin-top: 1rem;
+  font-style: italic;
+}
+
+.answer-buttons {
+  width: 100%;
+  text-align: center;
+}
+
+.answer-prompt {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.quality-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.quality-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.quality-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.quality-icon {
+  font-size: 2rem;
+}
+
+.quality-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.quality-btn.quality-1 {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.quality-btn.quality-1:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.quality-btn.quality-2 {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.quality-btn.quality-2:hover {
+  background: #f59e0b;
+  color: white;
+}
+
+.quality-btn.quality-3 {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.quality-btn.quality-3:hover {
+  background: #10b981;
+  color: white;
+}
+
+.quality-btn.quality-4 {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.quality-btn.quality-4:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+.no-card-message {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-size: 1.125rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .flashcard {
+    height: 350px;
+  }
+
+  .flashcard-front,
+  .flashcard-back {
+    padding: 1.5rem;
+  }
+
+  .card-text {
+    font-size: 1.25rem;
+  }
+
+  .quality-buttons {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .quality-btn {
+    padding: 0.75rem;
+  }
+
+  .quality-icon {
+    font-size: 1.5rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .flashcard-front,
+  .flashcard-back {
+    border-color: #444;
+  }
+
+  .answer-prompt {
+    color: #e0e0e0;
+  }
+
+  .quality-btn {
+    background: #2a2a2a;
+    border-color: #444;
+  }
+
+  .quality-btn:hover {
+    background: #333;
+  }
+
+  .no-card-message {
+    color: #aaa;
+  }
+}

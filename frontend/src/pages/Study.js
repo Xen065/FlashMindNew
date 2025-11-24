@@ -4,12 +4,17 @@ import TodoList from '../components/TodoList';
 import StudyNotes from '../components/StudyNotes';
 import StudyCalendar from '../components/StudyCalendar';
 import MathTrick from '../components/MathTrick';
+import FlashcardQuickView from '../components/FlashcardQuickView';
+import FlashcardStudy from '../components/FlashcardStudy';
+import { isFeatureEnabled } from '../config';
 import './Study.css';
 
 const Study = () => {
   const [showMathTrick, setShowMathTrick] = useState(false);
+  const [showFlashcards, setShowFlashcards] = useState(false);
   const [activeView, setActiveView] = useState('grid'); // 'grid' or 'focus'
   const [focusComponent, setFocusComponent] = useState(null);
+  const flashcardsEnabled = isFeatureEnabled('flashcards');
 
   const handleFocusView = (component) => {
     setFocusComponent(component);
@@ -31,13 +36,15 @@ const Study = () => {
           <h2>{focusComponent === 'pomodoro' && '🍅 Pomodoro Timer'}
               {focusComponent === 'todo' && '📝 Todo List'}
               {focusComponent === 'notes' && '📝 Study Notes'}
-              {focusComponent === 'calendar' && '📅 Calendar'}</h2>
+              {focusComponent === 'calendar' && '📅 Calendar'}
+              {focusComponent === 'flashcards' && '🎴 Flashcards'}</h2>
         </div>
         <div className="focus-content">
           {focusComponent === 'pomodoro' && <PomodoroTimer />}
           {focusComponent === 'todo' && <TodoList />}
           {focusComponent === 'notes' && <StudyNotes />}
           {focusComponent === 'calendar' && <StudyCalendar />}
+          {focusComponent === 'flashcards' && <FlashcardStudy onClose={handleGridView} />}
         </div>
       </div>
     );
@@ -58,7 +65,7 @@ const Study = () => {
         </button>
       </div>
 
-      <div className="study-grid">
+      <div className={`study-grid ${flashcardsEnabled ? 'with-flashcards' : ''}`}>
         {/* Pomodoro Timer - Top Left */}
         <div className="study-card pomodoro-section">
           <div className="card-header">
@@ -73,6 +80,25 @@ const Study = () => {
           </div>
           <PomodoroTimer />
         </div>
+
+        {/* Flashcards - Top Middle (if enabled) */}
+        {flashcardsEnabled && (
+          <div className="study-card flashcards-section">
+            <div className="card-header">
+              <span>🎴 Flashcards</span>
+              <button
+                onClick={() => handleFocusView('flashcards')}
+                className="btn-expand"
+                title="Expand"
+              >
+                ⛶
+              </button>
+            </div>
+            <div className="card-content">
+              <FlashcardQuickView onStartStudy={() => setShowFlashcards(true)} />
+            </div>
+          </div>
+        )}
 
         {/* Calendar - Top Right */}
         <div className="study-card calendar-section">
@@ -130,6 +156,12 @@ const Study = () => {
           <span className="action-icon">🧮</span>
           <span className="action-label">Math Practice</span>
         </button>
+        {flashcardsEnabled && (
+          <button className="action-btn" onClick={() => setShowFlashcards(true)}>
+            <span className="action-icon">🎴</span>
+            <span className="action-label">Flashcards</span>
+          </button>
+        )}
         <button className="action-btn" onClick={() => handleFocusView('pomodoro')}>
           <span className="action-icon">⏱️</span>
           <span className="action-label">Start Timer</span>
@@ -146,6 +178,15 @@ const Study = () => {
 
       {/* Math Trick Modal */}
       {showMathTrick && <MathTrick onClose={() => setShowMathTrick(false)} />}
+
+      {/* Flashcards Modal */}
+      {flashcardsEnabled && showFlashcards && (
+        <div className="modal-overlay">
+          <div className="modal-content flashcards-modal">
+            <FlashcardStudy onClose={() => setShowFlashcards(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
