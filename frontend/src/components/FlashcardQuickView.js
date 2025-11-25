@@ -95,7 +95,7 @@ const FlashcardQuickView = ({ onStartStudy, compact = true }) => {
 
           <button onClick={handleStartStudy} className="btn-start-study">
             <span className="btn-icon">🚀</span>
-            <span className="btn-text">Start Studying</span>
+            <span className="btn-text">Study</span>
           </button>
         </>
       )}

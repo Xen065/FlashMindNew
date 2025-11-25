@@ -105,6 +105,116 @@
   transform: scale(1.1);
 }
 
+/* Search Results Dropdown */
+.nav-search {
+  position: relative;
+}
+
+.nav-search-results {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-search-loading,
+.nav-search-no-results {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.nav-search-results-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--card-border);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.nav-search-results-list {
+  padding: 0.5rem;
+}
+
+.nav-search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-search-result-item:hover {
+  background: var(--input-focus-bg);
+  transform: translateX(4px);
+}
+
+.result-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.result-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.result-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-meta {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.nav-search-view-all {
+  display: block;
+  padding: 1rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-top: 1px solid var(--card-border);
+  transition: background 0.2s;
+}
+
+.nav-search-view-all:hover {
+  background: var(--input-focus-bg);
+}
+
+/* Responsive adjustments for search results */
+@media (max-width: 768px) {
+  .nav-search-results {
+    max-height: 300px;
+  }
+
+  .result-icon {
+    font-size: 1.5rem;
+  }
+}
+
 /* Navigation Menu */
 .nav-menu {
   list-style: none;
@@ -153,6 +263,49 @@
 
 .dark-mode .nav-links a.active::after {
   box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
+}
+
+/* Glassmorphism Button Links (Dashboard, Admin) */
+.nav-button-link {
+  display: inline-flex;
+  align-items: center;
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.nav-button-link:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  transform: none; /* Override default nav-menu a transform */
+}
+
+.dark-mode .nav-button-link:hover {
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+/* Active state for nav-button-link (no underline, use border highlight) */
+.nav-button-link.active {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.dark-mode .nav-button-link.active {
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+/* Remove the default ::after underline for button links */
+.nav-button-link.active::after {
+  display: none;
 }
 
 /* Primary Action Button */

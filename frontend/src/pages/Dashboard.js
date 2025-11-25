@@ -16,7 +16,7 @@ const Dashboard = () => {
         </div>
         <div className="dashboard-card">
           <h3>Quick Stats</h3>
-          <p>Start studying to see your progress here!</p>
+          <p>Study to see your progress here!</p>
         </div>
       </div>
     </div>
