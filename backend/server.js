@@ -400,8 +400,9 @@ if (require.main === module) {
       logger.info('Database connected successfully');
 
       // Sync database models (create tables if they don't exist)
-      // Temporarily disabled alter mode to avoid migration issues
-      return db.sync();
+      // Using alter mode to update existing schema (adds/removes columns as needed)
+      // WARNING: This can be slow on large databases. Consider using migrations for production.
+      return db.sync({ alter: true });
     })
     .then(() => {
       logger.info('Database synchronized');
