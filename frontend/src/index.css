@@ -52,22 +52,22 @@
   --color-gold: #ffd700;
 }
 
-/* Dark Mode - True Dark Theme */
+/* Dark Mode - Purple/Blue Theme */
 .dark-mode {
   /* Dark Gradients */
-  --bg-gradient-start: #0a0e27;     /* Very Dark Blue */
+  --bg-gradient-start: #1a0b2e;     /* Deep Purple */
   --bg-gradient-mid: #16213e;       /* Dark Blue */
-  --bg-gradient-end: #1a1a2e;       /* Dark Navy */
+  --bg-gradient-end: #0f0e2e;       /* Dark Navy Purple */
 
   /* Primary Colors */
-  --primary-color: #05BFDB;         /* Bright Cyan */
-  --primary-color-light: #00D9FF;   /* Light Cyan */
-  --primary-color-dark: #0398B4;    /* Dark Cyan */
+  --primary-color: #7c3aed;         /* Vibrant Purple */
+  --primary-color-light: #a78bfa;   /* Light Purple */
+  --primary-color-dark: #5b21b6;    /* Dark Purple */
 
   /* Card/Surface Colors */
   --card-bg: rgba(255, 255, 255, 0.05);
-  --card-border: rgba(5, 191, 219, 0.2);
-  --card-border-hover: rgba(5, 191, 219, 0.4);
+  --card-border: rgba(124, 58, 237, 0.2);
+  --card-border-hover: rgba(124, 58, 237, 0.4);
 
   /* Text Colors */
   --text-primary: rgba(255, 255, 255, 0.95);
@@ -75,19 +75,19 @@
   --text-tertiary: rgba(255, 255, 255, 0.6);
 
   /* Navigation */
-  --nav-bg: rgba(10, 14, 39, 0.6);
-  --nav-border: rgba(5, 191, 219, 0.15);
+  --nav-bg: rgba(26, 11, 46, 0.6);
+  --nav-border: rgba(124, 58, 237, 0.15);
 
   /* Form Inputs */
   --input-bg: rgba(255, 255, 255, 0.05);
-  --input-border: rgba(5, 191, 219, 0.25);
-  --input-focus-bg: rgba(5, 191, 219, 0.1);
+  --input-border: rgba(124, 58, 237, 0.25);
+  --input-focus-bg: rgba(124, 58, 237, 0.1);
 
   /* Shadows (Dark) */
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
-  --shadow-primary: 0 4px 12px rgba(5, 191, 219, 0.2);
+  --shadow-primary: 0 4px 12px rgba(124, 58, 237, 0.2);
 }
 
 /* ============ Base Styles ============ */
@@ -277,7 +277,7 @@ p {
 }
 
 .dark-mode .btn-primary:hover {
-  box-shadow: 0 12px 24px rgba(5, 191, 219, 0.4);
+  box-shadow: 0 12px 24px rgba(124, 58, 237, 0.4);
 }
 
 .btn-primary:active {
@@ -359,8 +359,14 @@ select:focus {
   outline: none;
   border-color: var(--primary-color);
   background: var(--input-focus-bg);
-  box-shadow: 0 0 0 4px rgba(5, 191, 219, 0.1);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
   transform: translateY(-2px);
+}
+
+.dark-mode input:focus,
+.dark-mode textarea:focus,
+.dark-mode select:focus {
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
 }
 
 input:hover,
@@ -384,8 +390,8 @@ select:hover {
 }
 
 .dark-mode .badge {
-  background: rgba(5, 191, 219, 0.25);
-  border: 1px solid rgba(5, 191, 219, 0.4);
+  background: rgba(124, 58, 237, 0.25);
+  border: 1px solid rgba(124, 58, 237, 0.4);
 }
 
 .badge:hover {
@@ -550,7 +556,11 @@ select:hover {
   height: 3px;
   background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
   border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(5, 191, 219, 0.4);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.dark-mode .nav-menu a.active::after {
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
 }
 
 /* ============ Utility Classes ============ */
@@ -913,7 +923,11 @@ select:hover {
 .theme-toggle:hover {
   transform: scale(1.1) rotate(15deg);
   border-color: var(--primary-color);
-  box-shadow: 0 8px 32px rgba(5, 191, 219, 0.3);
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+}
+
+.dark-mode .theme-toggle:hover {
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
 }
 
 .theme-toggle:active {

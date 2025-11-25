@@ -1,0 +1,294 @@
+/* Nested Dropdown Container */
+.nested-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Toggle Button */
+.nested-dropdown-toggle {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nested-dropdown-toggle:hover {
+  background: var(--nav-hover-bg);
+  color: var(--primary-color);
+}
+
+.nested-dropdown-toggle.active {
+  color: var(--primary-color);
+  background: var(--nav-hover-bg);
+}
+
+.dropdown-arrow {
+  font-size: 0.7rem;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+.nested-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  min-width: 280px;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--dropdown-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem;
+  z-index: 1000;
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar Styling */
+.nested-dropdown-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.nested-dropdown-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nested-dropdown-menu::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+.nested-dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Dropdown Header */
+.nested-dropdown-header {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.5rem;
+}
+
+.view-all-button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.view-all-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+/* Dropdown List */
+.nested-dropdown-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Dropdown Item */
+.nested-dropdown-item {
+  margin: 0.25rem 0;
+}
+
+.nested-dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--text-color);
+  text-decoration: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.nested-dropdown-link:hover {
+  background: var(--nav-hover-bg);
+  color: var(--primary-color);
+  transform: translateX(4px);
+}
+
+.nested-dropdown-link.has-children {
+  font-weight: 600;
+}
+
+.category-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.category-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arrow {
+  font-size: 0.6rem;
+  transition: transform 0.3s ease;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.arrow.open {
+  transform: rotate(90deg);
+}
+
+.course-count {
+  background: var(--badge-bg);
+  color: var(--badge-color);
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+/* Submenu */
+.nested-submenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  padding-left: 1.5rem;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.nested-submenu.open {
+  max-height: 1000px;
+  opacity: 1;
+  margin-top: 0.25rem;
+}
+
+/* Level Indentation */
+.nested-dropdown-item.level-1 .nested-dropdown-link {
+  padding-left: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.nested-dropdown-item.level-2 .nested-dropdown-link {
+  padding-left: 2rem;
+  font-size: 0.85rem;
+}
+
+.nested-dropdown-item.level-3 .nested-dropdown-link {
+  padding-left: 2.5rem;
+  font-size: 0.85rem;
+}
+
+/* Loading, Error, Empty States */
+.nested-dropdown-loading,
+.nested-dropdown-error,
+.nested-dropdown-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.nested-dropdown-error {
+  color: var(--error-color);
+}
+
+/* Dark Mode Support */
+:root {
+  --dropdown-bg: rgba(255, 255, 255, 0.95);
+  --nav-hover-bg: rgba(16, 185, 129, 0.1);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --text-color: #1f2937;
+  --text-secondary: #6b7280;
+  --primary-color: #10B981;
+  --secondary-color: #14B8A6;
+  --badge-bg: rgba(16, 185, 129, 0.1);
+  --badge-color: #10B981;
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.2);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
+  --error-color: #ef4444;
+}
+
+[data-theme='dark'] {
+  --dropdown-bg: rgba(31, 41, 55, 0.95);
+  --nav-hover-bg: rgba(124, 58, 237, 0.15);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-color: #f9fafb;
+  --text-secondary: #9ca3af;
+  --primary-color: #7c3aed;
+  --secondary-color: #a78bfa;
+  --badge-bg: rgba(124, 58, 237, 0.2);
+  --badge-color: #a5b4fc;
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .nested-dropdown-menu {
+    left: auto;
+    right: 0;
+    min-width: 260px;
+    max-width: calc(100vw - 2rem);
+    max-height: 70vh;
+  }
+
+  .nested-dropdown-link {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  .category-icon {
+    font-size: 1.1rem;
+  }
+
+  .view-all-button {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.9rem;
+  }
+}

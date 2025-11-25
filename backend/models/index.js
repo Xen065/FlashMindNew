@@ -7,6 +7,7 @@
 
 const User = require('./User');
 const Course = require('./Course');
+const CourseCategory = require('./CourseCategory');
 const Card = require('./Card');
 const StudySession = require('./StudySession');
 const StudyTask = require('./StudyTask');
@@ -154,6 +155,29 @@ Course.belongsTo(User, {
 User.hasMany(Course, {
   foreignKey: 'createdBy',
   as: 'createdCourses'
+});
+
+// CourseCategory self-referential relationship (parent-child)
+CourseCategory.hasMany(CourseCategory, {
+  foreignKey: 'parentId',
+  as: 'children',
+  onDelete: 'CASCADE'
+});
+
+CourseCategory.belongsTo(CourseCategory, {
+  foreignKey: 'parentId',
+  as: 'parent'
+});
+
+// Course -> CourseCategory (Many-to-One)
+Course.belongsTo(CourseCategory, {
+  foreignKey: 'categoryId',
+  as: 'courseCategory'
+});
+
+CourseCategory.hasMany(Course, {
+  foreignKey: 'categoryId',
+  as: 'courses'
 });
 
 // User -> AuditLog (One-to-Many)
@@ -404,6 +428,7 @@ RefreshToken.belongsTo(User, {
 module.exports = {
   User,
   Course,
+  CourseCategory,
   Card,
   StudySession,
   StudyTask,

@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
+import config from '../config';
 import './Homepage.css';
 
 const Homepage = () => {
   const { user } = useAuth();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState(null);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState(null);
 
   const features = [
     {
@@ -57,6 +63,29 @@ const Homepage = () => {
     }
   ];
 
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    try {
+      setSearching(true);
+      setSearchError(null);
+      const response = await axios.get(`${config.apiUrl}/api/courses?search=${encodeURIComponent(searchQuery)}`);
+      setSearchResults(response.data.data?.courses || []);
+    } catch (error) {
+      console.error('Error searching courses:', error);
+      setSearchError(error.response?.data?.message || 'Failed to search courses. Please try again.');
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    setSearchResults(null);
+    setSearchError(null);
+  };
+
   return (
     <div className="homepage">
       {/* Hero Section */}
@@ -68,6 +97,35 @@ const Homepage = () => {
             <p className="hero-description">
               Transform the way you learn with intelligent flashcards, gamification, and powerful study tools designed for students and lifelong learners.
             </p>
+
+            {/* Search Bar */}
+            <div className="homepage-search-container">
+              <form onSubmit={handleSearch} className="homepage-search-form">
+                <div className="homepage-search-input-wrapper">
+                  <input
+                    type="text"
+                    placeholder="Search for courses..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="homepage-search-input"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={clearSearch}
+                      className="homepage-search-clear"
+                      aria-label="Clear search"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+                <button type="submit" className="homepage-search-button" disabled={searching}>
+                  {searching ? '...' : '🔍 Search'}
+                </button>
+              </form>
+            </div>
+
             <div className="cta-buttons">
               {!user ? (
                 <>
@@ -101,6 +159,66 @@ const Homepage = () => {
           </div>
         </div>
       </section>
+
+      {/* Search Results Section */}
+      {searchResults !== null && (
+        <section className="search-results-section">
+          <div className="container">
+            <div className="search-results-header">
+              <h2>Search Results for "{searchQuery}"</h2>
+              <button onClick={clearSearch} className="btn btn-secondary btn-small">
+                Clear Search
+              </button>
+            </div>
+
+            {searchError && (
+              <div className="search-error">
+                <p>{searchError}</p>
+              </div>
+            )}
+
+            {!searchError && searchResults.length === 0 && (
+              <div className="search-empty">
+                <div className="empty-icon">🔍</div>
+                <h3>No courses found</h3>
+                <p>Try searching with different keywords</p>
+              </div>
+            )}
+
+            {!searchError && searchResults.length > 0 && (
+              <div className="search-results-grid">
+                {searchResults.map((course) => (
+                  <div key={course.id} className="search-result-card">
+                    <h3>{course.title}</h3>
+                    <p>{course.description || 'No description available'}</p>
+
+                    {(course.difficulty || course.cardCount) && (
+                      <div className="course-meta">
+                        {course.difficulty && (
+                          <span className="meta-item">
+                            <span className="icon">📊</span>
+                            {course.difficulty}
+                          </span>
+                        )}
+                        {course.cardCount && (
+                          <span className="meta-item">
+                            <span className="icon">🎴</span>
+                            {course.cardCount} cards
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    <Link to={`/courses/${course.id}`} className="btn btn-primary">
+                      View Course
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section className="features-section">

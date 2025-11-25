@@ -15,7 +15,7 @@ import Study from './pages/Study';
 import PracticeQuestions from './pages/PracticeQuestions';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import Permissions from './pages/admin/Permissions';
-import AdminCourses from './pages/admin/AdminCourses';
+import ManageCoursesPage from './pages/admin/ManageCoursesPage';
 import CreateCourse from './pages/admin/CreateCourse';
 import ManageCourseContent from './pages/admin/ManageCourseContent';
 import QuestionManagement from './pages/admin/QuestionManagement';
@@ -91,7 +91,7 @@ function App() {
                     path="/admin/courses"
                     element={
                       <ProtectedRoute>
-                        <AdminCourses />
+                        <ManageCoursesPage />
                       </ProtectedRoute>
                     }
                   />

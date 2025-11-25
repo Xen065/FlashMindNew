@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Course } = require('../models');
+const { Course, CourseCategory } = require('../models');
 const { Sequelize } = require('sequelize');
 
 /**
@@ -89,6 +89,28 @@ router.get('/courses/:id', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching course details'
+    });
+  }
+});
+
+/**
+ * @route   GET /api/public/course-categories/tree
+ * @desc    Get hierarchical category tree for dropdown navigation (no auth required)
+ * @access  Public
+ */
+router.get('/course-categories/tree', async (req, res) => {
+  try {
+    const categoryTree = await CourseCategory.getFullTree();
+
+    res.json({
+      success: true,
+      data: categoryTree
+    });
+  } catch (error) {
+    console.error('Error fetching category tree:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching course categories'
     });
   }
 });

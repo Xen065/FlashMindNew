@@ -12,6 +12,7 @@ const { requireRole } = require('../../middleware/rbac');
 
 // Import admin route modules
 const courseRoutes = require('./courses');
+const courseCategoryRoutes = require('./courseCategories');
 const cardRoutes = require('./cards');
 const userRoutes = require('./users');
 const auditLogRoutes = require('./auditLogs');
@@ -26,6 +27,7 @@ router.use(requireRole(['teacher', 'admin', 'super_admin']));
 
 // Mount admin route modules
 router.use('/courses', courseRoutes);
+router.use('/course-categories', courseCategoryRoutes);
 router.use('/cards', cardRoutes);
 router.use('/users', userRoutes);
 router.use('/audit-logs', auditLogRoutes);

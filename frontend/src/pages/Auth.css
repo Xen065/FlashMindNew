@@ -91,7 +91,11 @@
   outline: none;
   border-color: var(--primary-color);
   background: var(--input-focus-bg);
-  box-shadow: 0 0 0 4px rgba(5, 191, 219, 0.1);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.dark-mode .auth-input:focus {
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
   transform: translateY(-2px);
 }
 

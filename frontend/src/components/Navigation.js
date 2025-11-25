@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import NestedDropdown from './NestedDropdown';
 import './Navigation.css';
 
 const Navigation = () => {
@@ -10,11 +11,34 @@ const Navigation = () => {
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  // Fetch course categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/public/course-categories/tree');
+        const data = await response.json();
+        if (data.success) {
+          setCategories(data.data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        setCategoriesError(true);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleLogout = async () => {
     setShowProfileMenu(false);
+    await logout();
+    navigate('/login');
   };
 
   const handleSearch = (e) => {
@@ -62,7 +86,13 @@ const Navigation = () => {
           {user ? (
             <>
               <li><Link to="/dashboard">Dashboard</Link></li>
-              <li><Link to="/courses">Courses</Link></li>
+              <li>
+                <NestedDropdown
+                  categories={categories}
+                  loading={categoriesLoading}
+                  error={categoriesError}
+                />
+              </li>
               <li>
                 <Link to="/study" className="nav-primary-action">
                   Start Studying
@@ -80,7 +110,7 @@ const Navigation = () => {
                 <button
                   className="profile-button"
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  onBlur={() => setTimeout(() => setShowProfileMenu(false), 200)}
+                  onBlur={() => setTimeout(() => setShowProfileMenu(false), 300)}
                 >
                   <div className="profile-avatar">
                     {getInitials(user.username)}
@@ -98,7 +128,7 @@ const Navigation = () => {
                       <span className="menu-icon">⚙️</span>
                       Settings
                     </Link>
-                    <button onClick={handleLogout} className="profile-menu-item logout-item">
+                    <button onMouseDown={handleLogout} className="profile-menu-item logout-item">
                       <span className="menu-icon">🚪</span>
                       Logout
                     </button>
@@ -108,6 +138,13 @@ const Navigation = () => {
             </>
           ) : (
             <>
+              <li>
+                <NestedDropdown
+                  categories={categories}
+                  loading={categoriesLoading}
+                  error={categoriesError}
+                />
+              </li>
               <li><Link to="/login">Login</Link></li>
               <li><Link to="/register" className="nav-cta">Get Started Free</Link></li>
               <li>

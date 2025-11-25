@@ -49,7 +49,20 @@ const Course = sequelize.define('Course', {
   category: {
     type: DataTypes.STRING(50),
     allowNull: true,
-    defaultValue: 'General'
+    defaultValue: 'General',
+    comment: 'Legacy category field (deprecated - use categoryId instead)'
+  },
+
+  categoryId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'category_id',
+    references: {
+      model: 'course_categories',
+      key: 'id'
+    },
+    onDelete: 'SET NULL',
+    comment: 'Reference to CourseCategory for hierarchical categorization'
   },
 
   difficulty: {
@@ -146,6 +159,9 @@ const Course = sequelize.define('Course', {
   indexes: [
     {
       fields: ['category']
+    },
+    {
+      fields: ['category_id']
     },
     {
       fields: ['is_published']

@@ -8,7 +8,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, optionalAuth } = require('../middleware/auth');
-const { Course, UserCourse, Card } = require('../models');
+const { Course, UserCourse, Card, CourseCategory } = require('../models');
 const { Op } = require('sequelize');
 
 /**
@@ -18,12 +18,25 @@ const { Op } = require('sequelize');
  */
 router.get('/', optionalAuth, async (req, res) => {
   try {
-    const { category, search, limit = 50 } = req.query;
+    const { category, categoryId, search, limit = 50 } = req.query;
 
     const where = { isPublished: true };
 
+    // Legacy category filter (string-based)
     if (category) {
       where.category = category;
+    }
+
+    // New hierarchical category filter (includes descendants)
+    if (categoryId) {
+      const selectedCategory = await CourseCategory.findByPk(categoryId);
+      if (selectedCategory) {
+        const descendants = await selectedCategory.getAllDescendants();
+        const categoryIds = [parseInt(categoryId), ...descendants.map(d => d.id)];
+        where.categoryId = { [Op.in]: categoryIds };
+      } else {
+        where.categoryId = categoryId;
+      }
     }
 
     if (search) {
@@ -39,6 +52,13 @@ router.get('/', optionalAuth, async (req, res) => {
       order: [
         ['isFeatured', 'DESC'],
         ['enrollmentCount', 'DESC']
+      ],
+      include: [
+        {
+          model: CourseCategory,
+          as: 'courseCategory',
+          attributes: ['id', 'name', 'icon', 'color']
+        }
       ]
     });
 
