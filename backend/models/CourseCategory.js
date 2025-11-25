@@ -28,7 +28,6 @@ const CourseCategory = sequelize.define('CourseCategory', {
   slug: {
     type: DataTypes.STRING(120),
     allowNull: true,
-    unique: true,
     comment: 'URL-friendly version of name'
   },
 

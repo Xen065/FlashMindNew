@@ -33,7 +33,13 @@ async function initDatabase() {
     console.log('   - user_courses');
     console.log('');
     console.log('✅ Database initialization complete!');
-    console.log('💡 Run "npm run seed" to add sample data');
+    console.log('');
+    console.log('⚠️  ============================================');
+    console.log('⚠️  IMPORTANT: Database is empty!');
+    console.log('⚠️  Run "npm run seed" to add sample data');
+    console.log('⚠️  ============================================');
+    console.log('');
+    console.log('💡 TIP: Use "npm run setup" to init + seed in one command');
 
     process.exit(0);
   } catch (error) {
