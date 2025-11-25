@@ -24,7 +24,7 @@ const Navigation = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('/api/public/course-categories/tree');
+        const response = await fetch(`${config.apiUrl}/api/public/course-categories/tree`);
         const data = await response.json();
         if (data.success) {
           setCategories(data.data || []);

@@ -400,7 +400,8 @@ if (require.main === module) {
       logger.info('Database connected successfully');
 
       // Sync database models (create tables if they don't exist)
-      return db.sync({ alter: process.env.NODE_ENV === 'development' });
+      // Temporarily disabled alter mode to avoid migration issues
+      return db.sync();
     })
     .then(() => {
       logger.info('Database synchronized');

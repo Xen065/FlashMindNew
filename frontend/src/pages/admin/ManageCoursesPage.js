@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
-import config from '../../config';
+import api from '../../services/api';
 import './ManageCoursesPage.css';
 
 const ManageCoursesPage = () => {
@@ -39,7 +38,7 @@ const ManageCoursesPage = () => {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${config.apiUrl}/api/admin/courses`);
+      const response = await api.get('/api/admin/courses');
       setCourses(response.data.data?.courses || []);
     } catch (error) {
       console.error('Error fetching courses:', error);
@@ -52,10 +51,10 @@ const ManageCoursesPage = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(`${config.apiUrl}/api/admin/course-categories/tree`);
+      const response = await api.get('/api/admin/course-categories/tree');
       setCategories(response.data.data || []);
 
-      const flatResponse = await axios.get(`${config.apiUrl}/api/admin/course-categories`);
+      const flatResponse = await api.get('/api/admin/course-categories');
       setFlatCategories(flatResponse.data.data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -81,9 +80,9 @@ const ManageCoursesPage = () => {
     e.preventDefault();
     try {
       if (editingCategory) {
-        await axios.put(`${config.apiUrl}/api/admin/course-categories/${editingCategory.id}`, formData);
+        await api.put(`/api/admin/course-categories/${editingCategory.id}`, formData);
       } else {
-        await axios.post(`${config.apiUrl}/api/admin/course-categories`, formData);
+        await api.post('/api/admin/course-categories', formData);
       }
       await fetchCategories();
       closeModals();
@@ -113,7 +112,7 @@ const ManageCoursesPage = () => {
     }
 
     try {
-      await axios.delete(`${config.apiUrl}/api/admin/course-categories/${categoryId}`);
+      await api.delete(`/api/admin/course-categories/${categoryId}`);
       await fetchCategories();
     } catch (error) {
       console.error('Error deleting category:', error);
