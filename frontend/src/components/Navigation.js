@@ -7,7 +7,7 @@ import './Navigation.css';
 import axios from 'axios';
 import config from '../config';
 
-const Navigation = () => {
+const Navigation = ({ children }) => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -99,6 +99,7 @@ const Navigation = () => {
   return (
     <nav className="navigation">
       <div className="nav-container">
+        {children}
         <Link to="/" className="nav-logo">
           <h1>FlashMind</h1>
         </Link>
