@@ -1,4 +1,7 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { lightTheme, darkTheme } from '../theme/muiTheme';
 
 const ThemeContext = createContext();
 
@@ -17,12 +20,19 @@ export const ThemeProvider = ({ children }) => {
     return savedTheme || 'light';
   });
 
+  // Select MUI theme based on current theme mode
+  const muiTheme = useMemo(() => {
+    return theme === 'dark' ? darkTheme : lightTheme;
+  }, [theme]);
+
   useEffect(() => {
-    // Apply theme class to document body
+    // Apply theme class to document body for vanilla CSS
     if (theme === 'dark') {
       document.body.classList.add('dark-mode');
+      document.documentElement.classList.add('dark-mode');
     } else {
       document.body.classList.remove('dark-mode');
+      document.documentElement.classList.remove('dark-mode');
     }
 
     // Save theme to localStorage
@@ -35,7 +45,10 @@ export const ThemeProvider = ({ children }) => {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
+      <MuiThemeProvider theme={muiTheme}>
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
     </ThemeContext.Provider>
   );
 };
