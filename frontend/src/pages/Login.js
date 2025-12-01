@@ -1,162 +1,170 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import {
+  Container,
+  Box,
+  Card,
+  CardContent,
+  TextField,
+  Button,
+  Typography,
+  Alert,
+  CircularProgress,
+  Link as MuiLink
+} from '@mui/material';
+import { Login as LoginIcon } from '@mui/icons-material';
 import './Auth.css';
 
+// Validation schema
+const validationSchema = Yup.object({
+  email: Yup.string()
+    .email('Please enter a valid email address')
+    .required('Email is required'),
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required')
+});
+
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
-  const emailInputRef = useRef(null);
 
-  // Auto-focus on first field
-  useEffect(() => {
-    emailInputRef.current?.focus();
-  }, []);
-
-  const validateForm = () => {
-    const errors = {};
-
-    if (!email) {
-      errors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-
-    if (!password) {
-      errors.password = 'Password is required';
-    } else if (password.length < 6) {
-      errors.password = 'Password must be at least 6 characters';
-    }
-
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setFieldErrors({});
-
-    if (!validateForm()) {
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await login(email, password);
-      navigate('/dashboard');
-    } catch (err) {
-      const errorMsg = err.response?.data?.message || 'Login failed. Please check your credentials.';
-      setError(errorMsg);
-      // Announce error for screen readers
-      const errorElement = document.querySelector('.error-message');
-      if (errorElement) {
-        errorElement.setAttribute('role', 'alert');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleFieldChange = (field, value) => {
-    // Clear field error when user starts typing
-    if (fieldErrors[field]) {
-      setFieldErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
-    if (error) {
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: ''
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
       setError('');
-    }
+      setLoading(true);
 
-    if (field === 'email') setEmail(value);
-    if (field === 'password') setPassword(value);
-  };
+      try {
+        await login(values.email, values.password);
+        navigate('/dashboard');
+      } catch (err) {
+        const errorMsg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+        setError(errorMsg);
+      } finally {
+        setLoading(false);
+      }
+    }
+  });
 
   return (
     <div className="auth-page">
-      <div className="auth-container">
-        <h2>Login to FlashMind</h2>
-        {error && <div className="error-message" role="alert">{error}</div>}
+      <Container maxWidth="sm">
+        <Box
+          sx={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            py: 4
+          }}
+        >
+          <Card sx={{ width: '100%', maxWidth: 500 }}>
+            <CardContent sx={{ p: 4 }}>
+              {/* Header */}
+              <Box sx={{ textAlign: 'center', mb: 4 }}>
+                <LoginIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+                <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
+                  Login to FlashMind
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Welcome back! Please login to your account
+                </Typography>
+              </Box>
 
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="form-group">
-            <label htmlFor="email">
-              Email <span className="required" aria-label="required">*</span>
-            </label>
-            <input
-              id="email"
-              ref={emailInputRef}
-              type="email"
-              value={email}
-              onChange={(e) => handleFieldChange('email', e.target.value)}
-              onBlur={validateForm}
-              required
-              aria-required="true"
-              aria-invalid={fieldErrors.email ? 'true' : 'false'}
-              aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-              disabled={loading}
-              autoComplete="email"
-            />
-            {fieldErrors.email && (
-              <span id="email-error" className="field-error" role="alert">
-                {fieldErrors.email}
-              </span>
-            )}
-          </div>
+              {/* Error Alert */}
+              {error && (
+                <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
+                  {error}
+                </Alert>
+              )}
 
-          <div className="form-group">
-            <label htmlFor="password">
-              Password <span className="required" aria-label="required">*</span>
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => handleFieldChange('password', e.target.value)}
-              onBlur={validateForm}
-              required
-              aria-required="true"
-              aria-invalid={fieldErrors.password ? 'true' : 'false'}
-              aria-describedby={fieldErrors.password ? 'password-error' : undefined}
-              disabled={loading}
-              autoComplete="current-password"
-            />
-            {fieldErrors.password && (
-              <span id="password-error" className="field-error" role="alert">
-                {fieldErrors.password}
-              </span>
-            )}
-          </div>
+              {/* Login Form */}
+              <form onSubmit={formik.handleSubmit} noValidate>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  {/* Email Field */}
+                  <TextField
+                    fullWidth
+                    id="email"
+                    name="email"
+                    label="Email Address"
+                    type="email"
+                    autoComplete="email"
+                    autoFocus
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.email && Boolean(formik.errors.email)}
+                    helperText={formik.touched.email && formik.errors.email}
+                    disabled={loading}
+                    required
+                  />
 
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={loading}
-            aria-busy={loading}
-          >
-            {loading ? (
-              <>
-                <span className="spinner-small"></span>
-                <span>Logging in...</span>
-              </>
-            ) : (
-              'Login'
-            )}
-          </button>
-        </form>
+                  {/* Password Field */}
+                  <TextField
+                    fullWidth
+                    id="password"
+                    name="password"
+                    label="Password"
+                    type="password"
+                    autoComplete="current-password"
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.password && Boolean(formik.errors.password)}
+                    helperText={formik.touched.password && formik.errors.password}
+                    disabled={loading}
+                    required
+                  />
 
-        <p>
-          Don't have an account? <Link to="/register">Register</Link>
-        </p>
-      </div>
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    size="large"
+                    disabled={loading}
+                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <LoginIcon />}
+                    sx={{ mt: 1, py: 1.5 }}
+                  >
+                    {loading ? 'Logging in...' : 'Login'}
+                  </Button>
+                </Box>
+              </form>
+
+              {/* Register Link */}
+              <Box sx={{ mt: 3, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
+                  Don't have an account?{' '}
+                  <MuiLink
+                    component={Link}
+                    to="/register"
+                    sx={{
+                      color: 'primary.main',
+                      textDecoration: 'none',
+                      fontWeight: 600,
+                      '&:hover': {
+                        textDecoration: 'underline'
+                      }
+                    }}
+                  >
+                    Register
+                  </MuiLink>
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+      </Container>
     </div>
   );
 };
