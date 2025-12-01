@@ -1,11 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { DataGrid } from '@mui/x-data-grid';
+import {
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  Tooltip,
+  Typography
+} from '@mui/material';
+import {
+  Edit as EditIcon,
+  ContentCopy as ContentIcon,
+  Visibility as ViewIcon
+} from '@mui/icons-material';
 import api from '../../services/api';
 import './ManageCoursesPage.css';
 
 const ManageCoursesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'courses';
+  const navigate = useNavigate();
 
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -147,6 +162,111 @@ const ManageCoursesPage = () => {
     });
   };
 
+  // DataGrid columns definition for courses
+  const courseColumns = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 80,
+      sortable: true
+    },
+    {
+      field: 'title',
+      headerName: 'Course Title',
+      flex: 1,
+      minWidth: 250,
+      sortable: true,
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+          {params.value}
+        </Typography>
+      )
+    },
+    {
+      field: 'description',
+      headerName: 'Description',
+      flex: 1,
+      minWidth: 300,
+      sortable: false,
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: 'text.secondary', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {params.value || 'No description'}
+        </Typography>
+      )
+    },
+    {
+      field: 'difficulty',
+      headerName: 'Difficulty',
+      width: 130,
+      sortable: true,
+      renderCell: (params) => {
+        const colorMap = {
+          'beginner': 'success',
+          'intermediate': 'warning',
+          'advanced': 'error'
+        };
+        return (
+          <Chip
+            label={params.value || 'Not set'}
+            color={colorMap[params.value?.toLowerCase()] || 'default'}
+            size="small"
+          />
+        );
+      }
+    },
+    {
+      field: 'isPublished',
+      headerName: 'Status',
+      width: 120,
+      sortable: true,
+      renderCell: (params) => (
+        <Chip
+          label={params.value ? 'Published' : 'Draft'}
+          color={params.value ? 'success' : 'default'}
+          size="small"
+          variant={params.value ? 'filled' : 'outlined'}
+        />
+      )
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      sortable: false,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Tooltip title="Edit Course">
+            <IconButton
+              size="small"
+              onClick={() => navigate(`/admin/courses/${params.row.id}/edit`)}
+              sx={{ color: 'primary.main' }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Manage Content">
+            <IconButton
+              size="small"
+              onClick={() => navigate(`/admin/courses/${params.row.id}/content`)}
+              sx={{ color: 'secondary.main' }}
+            >
+              <ContentIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="View Course">
+            <IconButton
+              size="small"
+              onClick={() => navigate(`/courses/${params.row.id}`)}
+              sx={{ color: 'info.main' }}
+            >
+              <ViewIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )
+    }
+  ];
+
   const renderCategoryTree = (categoryList, level = 0) => {
     return categoryList.map(category => {
       const isExpanded = expandedCategories.has(category.id);
@@ -219,34 +339,82 @@ const ManageCoursesPage = () => {
       <div className="tab-content">
         {activeTab === 'courses' && (
           <div className="courses-tab">
-            <div className="tab-header">
-              <Link to="/admin/courses/new" className="btn btn-primary">
-                Create New Course
-              </Link>
-            </div>
+            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                All Courses
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={() => navigate('/admin/courses/new')}
+                sx={{ borderRadius: '12px' }}
+              >
+                + Create New Course
+              </Button>
+            </Box>
 
-            <div className="courses-list">
-              {courses.length === 0 ? (
-                <div className="empty-state">
-                  <p>No courses yet. Create your first course!</p>
-                </div>
-              ) : (
-                courses.map(course => (
-                  <div key={course.id} className="course-item">
-                    <h3>{course.title}</h3>
-                    <p>{course.description}</p>
-                    <div className="course-actions">
-                      <Link to={`/admin/courses/${course.id}/edit`} className="btn btn-secondary">
-                        Edit
-                      </Link>
-                      <Link to={`/admin/courses/${course.id}/content`} className="btn btn-secondary">
-                        Manage Content
-                      </Link>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+            <Box
+              sx={{
+                height: 600,
+                width: '100%',
+                '& .MuiDataGrid-root': {
+                  border: 'none',
+                  borderRadius: '20px',
+                  bgcolor: 'background.paper',
+                  backdropFilter: 'blur(15px)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                },
+                '& .MuiDataGrid-columnHeaders': {
+                  bgcolor: 'primary.main',
+                  color: 'white',
+                  fontSize: '0.95rem',
+                  fontWeight: 700,
+                  borderRadius: '20px 20px 0 0',
+                  '& .MuiDataGrid-columnHeaderTitle': {
+                    fontWeight: 700,
+                  },
+                  '& .MuiDataGrid-iconButtonContainer': {
+                    color: 'white',
+                  },
+                  '& .MuiDataGrid-sortIcon': {
+                    color: 'white',
+                  },
+                  '& .MuiDataGrid-menuIcon': {
+                    color: 'white',
+                  },
+                },
+                '& .MuiDataGrid-cell': {
+                  borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+                  fontSize: '0.9rem',
+                },
+                '& .MuiDataGrid-row': {
+                  '&:hover': {
+                    bgcolor: 'action.hover',
+                  },
+                },
+                '& .MuiDataGrid-footerContainer': {
+                  borderTop: '2px solid rgba(0, 0, 0, 0.1)',
+                  borderRadius: '0 0 20px 20px',
+                },
+              }}
+            >
+              <DataGrid
+                rows={courses}
+                columns={courseColumns}
+                initialState={{
+                  pagination: {
+                    paginationModel: { pageSize: 10, page: 0 },
+                  },
+                }}
+                pageSizeOptions={[5, 10, 25, 50]}
+                disableRowSelectionOnClick
+                loading={loading}
+                sx={{
+                  '& .MuiDataGrid-virtualScroller': {
+                    minHeight: courses.length === 0 ? '400px' : 'auto',
+                  },
+                }}
+              />
+            </Box>
           </div>
         )}
 
