@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   Typography,
-  CircularProgress,
   Alert,
   Chip,
   Avatar,
@@ -15,7 +14,9 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
-  Divider
+  Divider,
+  Skeleton,
+  Fade
 } from '@mui/material';
 import {
   People as PeopleIcon,
@@ -80,6 +81,61 @@ const AdminDashboard = () => {
     }
   };
 
+  // Loading skeleton component
+  const LoadingSkeleton = () => (
+    <Box sx={{ p: 3 }}>
+      {/* Header Skeleton */}
+      <Box sx={{ mb: 4 }}>
+        <Skeleton variant="text" width="40%" height={50} />
+        <Skeleton variant="text" width="25%" height={30} />
+      </Box>
+
+      {/* Stats Cards Skeleton */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {[1, 2, 3, 4].map((item) => (
+          <Grid item xs={12} sm={6} lg={3} key={item}>
+            <Card sx={{ borderRadius: '20px', height: '100%' }}>
+              <CardContent>
+                <Skeleton variant="circular" width={56} height={56} sx={{ mb: 2 }} />
+                <Skeleton variant="text" width="60%" height={40} />
+                <Skeleton variant="text" width="80%" />
+                <Skeleton variant="text" width="50%" />
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Charts Row Skeleton */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} lg={8}>
+          <Card sx={{ borderRadius: '20px' }}>
+            <CardContent>
+              <Skeleton variant="text" width="40%" height={30} sx={{ mb: 2 }} />
+              <Skeleton variant="rectangular" width="100%" height={300} sx={{ borderRadius: '12px' }} />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} lg={4}>
+          <Card sx={{ borderRadius: '20px' }}>
+            <CardContent>
+              <Skeleton variant="text" width="60%" height={30} sx={{ mb: 2 }} />
+              <Skeleton variant="circular" width={200} height={200} sx={{ mx: 'auto' }} />
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Activity Chart Skeleton */}
+      <Card sx={{ borderRadius: '20px', mb: 4 }}>
+        <CardContent>
+          <Skeleton variant="text" width="40%" height={30} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" width="100%" height={300} sx={{ borderRadius: '12px' }} />
+        </CardContent>
+      </Card>
+    </Box>
+  );
+
   if (!user || (user.role !== 'admin' && user.role !== 'super_admin' && user.role !== 'teacher')) {
     return (
       <Box sx={{ p: 3 }}>
@@ -89,11 +145,7 @@ const AdminDashboard = () => {
   }
 
   if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <LoadingSkeleton />;
   }
 
   if (error) {
@@ -150,19 +202,20 @@ const AdminDashboard = () => {
   })) || [];
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-          Admin Dashboard
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Welcome back, {user.username} ({user.role})
-        </Typography>
-      </Box>
+    <Fade in={!loading} timeout={600}>
+      <Box component="main" sx={{ p: 3 }} role="main" aria-label="Admin Dashboard">
+        {/* Header */}
+        <Box component="header" sx={{ mb: 4 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
+            Admin Dashboard
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Welcome back, {user.username} ({user.role})
+          </Typography>
+        </Box>
 
       {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={3} sx={{ mb: 4 }} component="section" aria-label="Platform Statistics">
         {statsCards.map((stat, index) => (
           <Grid item xs={12} sm={6} lg={3} key={index}>
             <Card
@@ -208,7 +261,7 @@ const AdminDashboard = () => {
       </Grid>
 
       {/* Charts Row */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={3} sx={{ mb: 4 }} component="section" aria-label="Analytics Charts">
         {/* User Growth Chart */}
         <Grid item xs={12} lg={8}>
           <Card
@@ -335,7 +388,7 @@ const AdminDashboard = () => {
       </Grid>
 
       {/* Bottom Section - Recent Activity & Top Courses */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} component="section" aria-label="Recent Activity">
         {/* Recent Users */}
         <Grid item xs={12} md={6}>
           <Card
@@ -419,8 +472,8 @@ const AdminDashboard = () => {
       </Grid>
 
       {/* Quick Actions */}
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+      <Box component="section" sx={{ mt: 4 }} aria-label="Quick Actions">
+        <Typography variant="h6" component="h2" sx={{ fontWeight: 600, mb: 2 }}>
           Quick Actions
         </Typography>
         <Grid container spacing={2}>
@@ -527,6 +580,7 @@ const AdminDashboard = () => {
         </Grid>
       </Box>
     </Box>
+    </Fade>
   );
 };
 
